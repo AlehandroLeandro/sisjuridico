@@ -46,7 +46,16 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO update(Long id, UserCreateDTO dto) {
-        User 
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+
+        user.setName(dto.getName());
+        user.setPassword(dto.getPassword());
+        user.setRole(dto.getRole());
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toResponse(updatedUser);
     }
 
     @Transactional
