@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +28,11 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
+    @Size(min = 3, max = 50)
     private String name;
 
     @Column(nullable = false)
+    @Size(min = 6, max = 100)
     private String password;
 
     @Enumerated(EnumType.STRING)

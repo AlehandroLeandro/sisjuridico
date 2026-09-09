@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import lombok.AllArgsConstructor;
+
 import sisjuridico.carbocat.dto.request.UserCreateDTO;
 import sisjuridico.carbocat.dto.response.UserResponseDTO;
 import sisjuridico.carbocat.entities.User;
@@ -49,9 +49,9 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
 
-        user.setName(dto.getName());
-        user.setPassword(dto.getPassword());
-        user.setRole(dto.getRole());
+        user.setName(dto.name());
+        user.setPassword(dto.password());
+        user.setRole(dto.role());
 
         User updatedUser = userRepository.save(user);
 

@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sisjuridico.carbocat.enums.TypeContract;
 
 
 @Getter
@@ -72,8 +73,8 @@ public class Contract {
     @JoinColumn(name = "contracted_person_id", nullable = false)
     private Person contracted;
 
-    @ManyToOne
-    @JoinColumn(name = "typeContract_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TypeContract typeContract;
 
     @OneToMany(mappedBy = "contract")

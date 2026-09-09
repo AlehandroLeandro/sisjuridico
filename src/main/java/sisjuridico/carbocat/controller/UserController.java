@@ -1,13 +1,31 @@
 package sisjuridico.carbocat.controller;
 
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import sisjuridico.carbocat.dto.request.UserCreateDTO;
+import sisjuridico.carbocat.service.UserService;
+import sisjuridico.carbocat.dto.response.UserResponseDTO;
 @RestController
 @RequestMapping("/users")
-@AllArgsContructor
+@AllArgsConstructor
 public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<list<UserResponseDTO>> findAll(@RequestParam(required = false) String name){
+    public ResponseEntity<List<UserResponseDTO>> findAll(@RequestParam(required = false) String name){
         if(name != null && !name.isBlank()) {
             return ResponseEntity.ok(userService.findByUserName(name));
         }
@@ -20,16 +38,16 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserReponseDTO> save(@RequestBody @Valid UserCreateDTO dto){
+    public ResponseEntity<UserResponseDTO> save(@RequestBody @Valid UserCreateDTO dto){
         UserResponseDTO savedUser = userService.save(dto);
 
-        URI location = URI.create("/users/" + savedUser.getId());
+        URI location = URI.create("/users/" + savedUser.id());
 
         return ResponseEntity.created(location).body(savedUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> update (@PathVariabel Long id; @RequestBody @Valid UserCreateDTO dto){
+    public ResponseEntity<UserResponseDTO> update (@PathVariable Long id, @RequestBody @Valid UserCreateDTO dto){
         return ResponseEntity.ok(userService.update(id, dto));
     }
 }
