@@ -74,4 +74,14 @@ public class UserService {
         return userMapper.toResponse(savedUser);
     }
 
+    @Transactional
+    public UserResponseDTO delete(Long id){
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " +id));
+        UserResponseDTO dto = userMapper.toResponse(user);
+        userRepository.delete(user);
+        return dto;
+    }
+
+
 }
