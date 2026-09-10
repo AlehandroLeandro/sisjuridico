@@ -11,6 +11,7 @@ import sisjuridico.carbocat.dto.request.create.UserCreateDTO;
 import sisjuridico.carbocat.dto.request.update.UserUpdateDTO;
 import sisjuridico.carbocat.dto.response.UserResponseDTO;
 import sisjuridico.carbocat.entities.User;
+import sisjuridico.carbocat.exception.ResorceNotFoundException;
 import sisjuridico.carbocat.exception.UserNotFoundException;
 import sisjuridico.carbocat.mapper.UserMapper;
 import sisjuridico.carbocat.repository.UserRepository;
@@ -32,7 +33,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponseDTO findById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+                .orElseThrow(() ->  ResorceNotFoundException.byId(User.class, id));
         return userMapper.toResponse(user);
     }
 
@@ -40,16 +41,13 @@ public class UserService {
     public List<UserResponseDTO> findByUserName(String username) {
         List<User> users = userRepository.findByNameContainingIgnoreCase(username);
 
-        if(users.isEmpty()){
-            throw new UserNotFoundException("No users found with username: " + username);
-        }
         return userMapper.toResponseList(users);
     }
 
     @Transactional
-    public UserResponseDTO updateComplete(Long id, UserCreateDTO dto) {
+    public UserResponseDTO updateFull(Long id, UserCreateDTO dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> ResorceNotFoundException.byId(User.class, id));
 
         userMapper.updateEntityFromCreateDto(dto, user);
         
@@ -61,7 +59,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO dto){
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> ResorceNotFoundException.byId(User.class, id));
         userMapper.updateEntityFromDto(dto, user);
         User updatedUser = userRepository.save(user);
         return userMapper.toResponse(updatedUser);
@@ -77,7 +75,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO delete(Long id){
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado com id: " +id));
+                .orElseThrow(() -> ResorceNotFoundException.byId(User.class, id));
         UserResponseDTO dto = userMapper.toResponse(user);
         userRepository.delete(user);
         return dto;

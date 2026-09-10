@@ -41,8 +41,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateComplete(@PathVariable Long id, @RequestBody @Valid UserCreateDTO dto){
-        return ResponseEntity.ok(userService.updateComplete(id, dto));
+    public ResponseEntity<UserResponseDTO> updateFull(@PathVariable Long id, @RequestBody @Valid UserCreateDTO dto){
+        return ResponseEntity.ok(userService.updateFull(id, dto));
     }
 
     @PatchMapping("/{id}")
