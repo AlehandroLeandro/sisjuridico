@@ -1,5 +1,30 @@
 package sisjuridico.carbocat.enums;
 
 public enum PositionClient {
-    POSITION_CLIENT
+    AUTOR,
+    REU,
+    REQUERENTE,
+    REQUERIDO,
+    EXEQUENTE,
+    EXECUTADO,
+    IMPETRANTE,
+    IMPETRADO,
+    APELANTE,
+    APELADO,
+    AGRAVANTE,
+    AGRAVADO,
+    EMBARGANTE,
+    EMBARGADO,
+    RECORRENTE,
+    RECORRIDO,
+    RECLAMANTE,
+    RECLAMADO,
+    CREDOR,
+    DEVEDOR,
+    INVENTARIANTE,
+    HERDEIRO,
+    TERCEIRO_INTERESSADO,
+    ASSISTENTE,
+    LITISCONSORTE,
+    AMICUS_CURIAE
 }

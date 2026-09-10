@@ -1,4 +1,4 @@
-package sisjuridico.carbocat.dto.request;
+package sisjuridico.carbocat.dto.request.update;
 
 import jakarta.validation.constraints.Size;
 import sisjuridico.carbocat.enums.Role;

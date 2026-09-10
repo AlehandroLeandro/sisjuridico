@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import sisjuridico.carbocat.dto.request.UserCreateDTO;
-import sisjuridico.carbocat.dto.request.UserUpdateDTO;
+import sisjuridico.carbocat.dto.request.create.UserCreateDTO;
+import sisjuridico.carbocat.dto.request.update.UserUpdateDTO;
 
 
 import sisjuridico.carbocat.dto.response.UserResponseDTO;

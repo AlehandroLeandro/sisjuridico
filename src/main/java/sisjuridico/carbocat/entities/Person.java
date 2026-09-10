@@ -1,6 +1,7 @@
 package sisjuridico.carbocat.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class Person {
     private Long id;
 
     @Column (nullable = false)
+    @Size(min = 3, max = 100)
     private String name;
 
     @Column(unique = true)

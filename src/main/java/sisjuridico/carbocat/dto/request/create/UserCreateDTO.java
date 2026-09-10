@@ -1,4 +1,4 @@
-package sisjuridico.carbocat.dto.request;
+package sisjuridico.carbocat.dto.request.create;
 
 import sisjuridico.carbocat.enums.Role;
 

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import sisjuridico.carbocat.dto.request.UserCreateDTO;
-import sisjuridico.carbocat.dto.request.UserUpdateDTO;
+import sisjuridico.carbocat.dto.request.create.UserCreateDTO;
+import sisjuridico.carbocat.dto.request.update.UserUpdateDTO;
 import sisjuridico.carbocat.service.UserService;
 import sisjuridico.carbocat.dto.response.UserResponseDTO;
 @RestController
