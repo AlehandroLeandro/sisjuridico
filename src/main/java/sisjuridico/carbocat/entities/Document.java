@@ -20,7 +20,7 @@ import lombok.Setter;
 @Entity
 @Table( name = "documents")
 
-public class Documents {
+public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -22,5 +22,5 @@ public class Lawyer extends Person{
             regexp = "(\\d{6})",
             message = "O Campo deve ter 6 caracteres para OAB"
     )
-    private String OAB;
+    private String oab;
 }

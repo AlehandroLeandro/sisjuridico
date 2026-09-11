@@ -11,4 +11,6 @@ import java.util.List;
 public interface PersonRepository extends JpaRepository<Person, Long> {
 
     List<Person> findByNameContainingIgnoreCase(String name);
+
+    List<Person> findByCpfCnpjContaining(String cpfCnpj);
 }

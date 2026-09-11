@@ -23,5 +23,4 @@ public interface PersonMapper {
 
     @Mapping(target = "id", ignore = true)
     void updateEntityFromCreateDto(PersonCreateDTO dto, @MappingTarget Person person);
-
 }

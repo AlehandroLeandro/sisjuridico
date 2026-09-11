@@ -80,6 +80,6 @@ public class Contract {
     private TypeContract typeContract;
 
     @OneToMany(mappedBy = "contract")
-    private List<Documents> documents;
+    private List<Document> documents;
 
 }

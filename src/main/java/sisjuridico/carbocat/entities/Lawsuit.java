@@ -71,7 +71,6 @@ public class Lawsuit {
     @JoinColumn(name = "nature_id", nullable = false)
     private Nature nature; // implementar a classe
 
-    
 
     @ManyToOne
     @JoinColumn(name = "action_id", nullable = false)
