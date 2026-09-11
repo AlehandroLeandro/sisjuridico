@@ -4,10 +4,10 @@ import jakarta.validation.constraints.Size;
 import sisjuridico.carbocat.enums.Role;
 
 public record UserUpdateDTO(
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 50, message = "Name must have between 3 and 50 characteres")
     String name,
 
-    @Size(min = 6, max = 100)
+    @Size(min = 6, max = 100, message = "Password must have between 6 and 100 characteres")
     String password,
     
     Role role

@@ -16,10 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,7 +49,7 @@ public class Contract {
 
     @Column
     @Nullable
-    private int adviceLeftDays;
+    private Integer adviceLeftDays;//não é obrigatório informar que vai vencer o contrato
 
     @NotNull(message = "O valor do contrato não pode ser nulo")
     @DecimalMin(value = "0.1", inclusive = true, message = "O valor do contrato deve ser maior que zero")
@@ -67,19 +64,27 @@ public class Contract {
     @Column(nullable = false)
     private boolean active;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "contractor_person_id", nullable = false)
     private Person contractor;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "contracted_person_id", nullable = false)
     private Person contracted;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TypeContract typeContract;
 
     @OneToMany(mappedBy = "contract")
     private List<Document> documents;
+
+    @AssertTrue(message = "Final date must be after initial date")
+    public boolean isValidPeriod(){
+        return endDate == null || (startDate != null && endDate.isAfter(startDate));
+    }
 
 }

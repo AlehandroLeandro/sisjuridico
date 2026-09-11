@@ -28,11 +28,11 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 50, message = "Name must have between 3 and 50 characteres")
     private String name;
 
     @Column(nullable = false)
-    @Size(min = 6, max = 100)
+    @Size(min = 6, max = 100, message = "Password must have between 6 and 100 characteres")
     private String password;
 
     @Enumerated(EnumType.STRING)

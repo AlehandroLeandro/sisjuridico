@@ -14,6 +14,8 @@ import sisjuridico.carbocat.entities.User;
 import sisjuridico.carbocat.exception.ResourceNotFoundException;
 import sisjuridico.carbocat.mapper.UserMapper;
 import sisjuridico.carbocat.repository.UserRepository;
+import sisjuridico.carbocat.enums.Role;
+import sisjuridico.carbocat.specification.UserSpecifications;
 
 @Service
 @Transactional
@@ -30,17 +32,17 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public List<UserResponseDTO> findByFilters(String name, Role role) {
+        return userMapper.toResponseList(
+                userRepository.findAll(UserSpecifications.withFilters(name, role))
+        );
+    }
+
+    @Transactional(readOnly = true)
     public UserResponseDTO findById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() ->  ResourceNotFoundException.byId(User.class, id));
         return userMapper.toResponse(user);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> findByUserName(String username) {
-        List<User> users = userRepository.findByNameContainingIgnoreCase(username);
-
-        return userMapper.toResponseList(users);
     }
 
     @Transactional

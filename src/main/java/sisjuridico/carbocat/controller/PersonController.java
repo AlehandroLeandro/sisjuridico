@@ -32,13 +32,7 @@ public class PersonController {
     public ResponseEntity<List<PersonResponseDTO>> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String cpfCnpj) {
-        if (name != null && !name.isBlank()) {
-            return ResponseEntity.ok(personService.findByName(name));
-        }
-        if (cpfCnpj != null && !cpfCnpj.isBlank()) {
-            return ResponseEntity.ok(personService.findByCpfCnpjContaining(cpfCnpj));
-        }
-        return ResponseEntity.ok(personService.findAll());
+        return ResponseEntity.ok(personService.findByFilters(name, cpfCnpj));
     }
 
     @GetMapping("/{id}")

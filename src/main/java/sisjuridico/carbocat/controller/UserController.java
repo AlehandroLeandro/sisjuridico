@@ -12,6 +12,7 @@ import sisjuridico.carbocat.dto.request.create.UserCreateDTO;
 import sisjuridico.carbocat.dto.request.update.UserUpdateDTO;
 import sisjuridico.carbocat.service.UserService;
 import sisjuridico.carbocat.dto.response.UserResponseDTO;
+import sisjuridico.carbocat.enums.Role;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
@@ -19,11 +20,10 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> findAll(@RequestParam(required = false) String name){
-        if(name != null && !name.isBlank()) {
-            return ResponseEntity.ok(userService.findByUserName(name));
-        }
-        return ResponseEntity.ok(userService.findAll());
+    public ResponseEntity<List<UserResponseDTO>> findAll(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Role role) {
+        return ResponseEntity.ok(userService.findByFilters(name, role));
     }
 
     @GetMapping("/{id}")

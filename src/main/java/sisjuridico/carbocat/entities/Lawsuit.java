@@ -1,19 +1,13 @@
 package sisjuridico.carbocat.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import sisjuridico.carbocat.enums.*;
 
 
 @Getter
@@ -33,47 +27,53 @@ public class Lawsuit {
     @Min(value = 1, message = "O número do processo deve ser maior que zero")
     private Long numProcesso;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "lawyer_id", nullable = false)
     private Lawyer lawyer;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "counterPart_person_id", nullable = false)
     private Person counterPartPerson;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "counterPart_lawyer_id", nullable = false)
     private Lawyer counterPartLawyer;
 
-    // ver quais os requisitos, se precisar ser uma classe ou se um enum resolve
-    /*@ManyToOne
-    @JoinColumn(name = "rit_id", nullable = false)
-    private Rit rit; //implementar a classe
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Rit rit;
 
-    @ManyToOne
-    @JoinColumn(name = "court_id", nullable = false)
-    private Court court; //implementar a classe
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Court court;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private InitialOrganization initialOrganization;
 
-    @ManyToOne
-    @JoinColumn(name = "initialOrganization_id", nullable = false)
-    private InitialOrganization initialOrganization; // implementar a classe
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PositionClient positionClient;
 
-    @ManyToOne
-    @JoinColumn(name = "positionClient_id", nullable = false)
-    private PositionClient positionClient; // implementar a classe
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Nature nature;
 
-    @ManyToOne
-    @JoinColumn(name = "nature_id", nullable = false)
-    private Nature nature; // implementar a classe
-
-
-    @ManyToOne
-    @JoinColumn(name = "action_id", nullable = false)
-    private Action action; //implementar a classe
-     */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Action action;
 }

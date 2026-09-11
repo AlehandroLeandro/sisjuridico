@@ -10,6 +10,7 @@ import sisjuridico.carbocat.entities.Person;
 import sisjuridico.carbocat.exception.ResourceNotFoundException;
 import sisjuridico.carbocat.mapper.PersonMapper;
 import sisjuridico.carbocat.repository.PersonRepository;
+import sisjuridico.carbocat.specification.PersonSpecifications;
 
 import java.util.List;
 
@@ -27,23 +28,17 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
+    public List<PersonResponseDTO> findByFilters(String name, String cpfCnpj) {
+        return personMapper.toResponseList(
+                personRepository.findAll(PersonSpecifications.withFilters(name, cpfCnpj))
+        );
+    }
+
+    @Transactional(readOnly = true)
     public PersonResponseDTO findById(Long id){
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.byId(Person.class, id));
         return personMapper.toResponse(person);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PersonResponseDTO> findByName(String name){
-        List<Person> people = personRepository.findByNameContainingIgnoreCase(name);
-
-        return personMapper.toResponseList(people);
-    }
-    @Transactional(readOnly = true)
-    public List<PersonResponseDTO> findByCpfCnpjContaining(String cpfCnpj){
-        List<Person> people = personRepository.findByNameContainingIgnoreCase(cpfCnpj);
-
-        return personMapper.toResponseList(people);
     }
 
     @Transactional
