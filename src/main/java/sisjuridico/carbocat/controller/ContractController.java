@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sisjuridico.carbocat.dto.request.create.ContractCreateDTO;
+import sisjuridico.carbocat.dto.request.create.ContractExtensionCreateDTO;
 import sisjuridico.carbocat.dto.request.update.ContractUpdateDTO;
+import sisjuridico.carbocat.dto.response.ContractExtensionResponseDTO;
 import sisjuridico.carbocat.dto.response.ContractResponseDTO;
 import sisjuridico.carbocat.enums.TypeContract;
 import sisjuridico.carbocat.service.ContractService;
@@ -55,6 +57,18 @@ public class ContractController {
     @PatchMapping("/{id}")
     public ResponseEntity<ContractResponseDTO> update(@PathVariable Long id, @RequestBody @Valid ContractUpdateDTO dto) {
         return ResponseEntity.ok(contractService.update(id, dto));
+    }
+
+    @GetMapping("/{id}/extensions")
+    public ResponseEntity<List<ContractExtensionResponseDTO>> findExtensions(@PathVariable Long id) {
+        return ResponseEntity.ok(contractService.findExtensions(id));
+    }
+
+    @PostMapping("/{id}/extensions")
+    public ResponseEntity<ContractExtensionResponseDTO> extend(@PathVariable Long id,
+                                                               @RequestBody @Valid ContractExtensionCreateDTO dto) {
+        ContractExtensionResponseDTO response = contractService.extend(id, dto);
+        return ResponseEntity.created(URI.create("/contracts/" + id + "/extensions/" + response.id())).body(response);
     }
 
     @DeleteMapping("/{id}")

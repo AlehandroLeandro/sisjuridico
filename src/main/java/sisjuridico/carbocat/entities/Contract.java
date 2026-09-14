@@ -47,6 +47,10 @@ public class Contract {
     @Nullable
     private LocalDate endDate;
 
+    @Column(nullable = true)
+    @Nullable
+    private LocalDate originalEndDate;
+
     @Column
     @Nullable
     private Integer adviceLeftDays;//não é obrigatório informar que vai vencer o contrato
@@ -81,6 +85,9 @@ public class Contract {
 
     @OneToMany(mappedBy = "contract")
     private List<Document> documents;
+
+    @OneToMany(mappedBy = "contract")
+    private List<ContractExtension> extensions;
 
     @AssertTrue(message = "Final date must be after initial date")
     public boolean isValidPeriod(){

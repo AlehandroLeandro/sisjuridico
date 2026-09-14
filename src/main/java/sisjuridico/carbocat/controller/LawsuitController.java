@@ -24,6 +24,8 @@ import sisjuridico.carbocat.enums.PositionClient;
 import sisjuridico.carbocat.enums.Rit;
 import sisjuridico.carbocat.service.LawsuitService;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.net.URI;
 import java.util.List;
 
@@ -45,11 +47,23 @@ public class LawsuitController {
             @RequestParam(required = false) InitialOrganization initialOrganization,
             @RequestParam(required = false) PositionClient positionClient,
             @RequestParam(required = false) Nature nature,
-            @RequestParam(required = false) Action action
+            @RequestParam(required = false) Action action,
+            @RequestParam(required = false) BigDecimal valorDaCausa,
+            @RequestParam(required = false) LocalDate dataValorCausa,
+            @RequestParam(required = false) BigDecimal valorProvisionado,
+            @RequestParam(required = false) LocalDate dataValorProvisionado,
+            @RequestParam(required = false) BigDecimal valorAcordo,
+            @RequestParam(required = false) LocalDate dataValorAcordo,
+            @RequestParam(required = false) BigDecimal custoProcesso,
+            @RequestParam(required = false) LocalDate dataCustoProcesso,
+            @RequestParam(required = false) BigDecimal valorSentenca,
+            @RequestParam(required = false) LocalDate dataValorSentenca
     ) {
         return ResponseEntity.ok(lawsuitService.findByFilters(
                 numProcesso, personId, lawyerId, counterPartPersonId, counterPartLawyerId, rit, court,
-                initialOrganization, positionClient, nature, action));
+                initialOrganization, positionClient, nature, action, valorDaCausa, dataValorCausa,
+                valorProvisionado, dataValorProvisionado, valorAcordo, dataValorAcordo, custoProcesso,
+                dataCustoProcesso, valorSentenca, dataValorSentenca));
     }
 
     @GetMapping("/{id}")

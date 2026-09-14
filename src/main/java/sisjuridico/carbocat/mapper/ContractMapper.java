@@ -16,6 +16,8 @@ import java.util.List;
 public interface ContractMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "extensions", ignore = true)
+    @Mapping(target = "originalEndDate", ignore = true)
     @Mapping(target = "contractor", ignore = true)
     @Mapping(target = "contracted", ignore = true)
     Contract toEntity(ContractCreateDTO dto);
@@ -29,12 +31,16 @@ public interface ContractMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "extensions", ignore = true)
+    @Mapping(target = "originalEndDate", ignore = true)
     @Mapping(target = "contractor", ignore = true)
     @Mapping(target = "contracted", ignore = true)
     void updateEntityFromDto(ContractUpdateDTO dto, @MappingTarget Contract contract);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "documents", ignore = true)
+    @Mapping(target = "extensions", ignore = true)
+    @Mapping(target = "originalEndDate", ignore = true)
     @Mapping(target = "contractor", ignore = true)
     @Mapping(target = "contracted", ignore = true)
     void updateEntityFromCreateDto(ContractCreateDTO dto, @MappingTarget Contract contract);

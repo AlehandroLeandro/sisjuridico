@@ -9,6 +9,9 @@ import sisjuridico.carbocat.enums.Nature;
 import sisjuridico.carbocat.enums.PositionClient;
 import sisjuridico.carbocat.enums.Rit;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public final class LawsuitSpecifications {
 
     private LawsuitSpecifications() {
@@ -17,7 +20,12 @@ public final class LawsuitSpecifications {
     public static Specification<Lawsuit> withFilters(Long numProcesso, Long personId, Long lawyerId,
                                                       Long counterPartPersonId, Long counterPartLawyerId, Rit rit,
                                                       Court court, InitialOrganization initialOrganization,
-                                                      PositionClient positionClient, Nature nature, Action action) {
+                                                      PositionClient positionClient, Nature nature, Action action,
+                                                      BigDecimal valorDaCausa, LocalDate dataValorCausa,
+                                                      BigDecimal valorProvisionado, LocalDate dataValorProvisionado,
+                                                      BigDecimal valorAcordo, LocalDate dataValorAcordo,
+                                                      BigDecimal custoProcesso, LocalDate dataCustoProcesso,
+                                                      BigDecimal valorSentenca, LocalDate dataValorSentenca) {
         return (root, query, builder) -> builder.and(
                 numProcesso == null ? builder.conjunction() : builder.equal(root.get("numProcesso"), numProcesso),
                 personId == null ? builder.conjunction() : builder.equal(root.get("person").get("id"), personId),
@@ -29,7 +37,17 @@ public final class LawsuitSpecifications {
                 initialOrganization == null ? builder.conjunction() : builder.equal(root.get("initialOrganization"), initialOrganization),
                 positionClient == null ? builder.conjunction() : builder.equal(root.get("positionClient"), positionClient),
                 nature == null ? builder.conjunction() : builder.equal(root.get("nature"), nature),
-                action == null ? builder.conjunction() : builder.equal(root.get("action"), action)
+                action == null ? builder.conjunction() : builder.equal(root.get("action"), action),
+                valorDaCausa == null ? builder.conjunction() : builder.equal(root.get("valorDaCausa"), valorDaCausa),
+                dataValorCausa == null ? builder.conjunction() : builder.equal(root.get("dataValorCausa"), dataValorCausa),
+                valorProvisionado == null ? builder.conjunction() : builder.equal(root.get("valorProvisionado"), valorProvisionado),
+                dataValorProvisionado == null ? builder.conjunction() : builder.equal(root.get("dataValorProvisionado"), dataValorProvisionado),
+                valorAcordo == null ? builder.conjunction() : builder.equal(root.get("valorAcordo"), valorAcordo),
+                dataValorAcordo == null ? builder.conjunction() : builder.equal(root.get("dataValorAcordo"), dataValorAcordo),
+                custoProcesso == null ? builder.conjunction() : builder.equal(root.get("custoProcesso"), custoProcesso),
+                dataCustoProcesso == null ? builder.conjunction() : builder.equal(root.get("dataCustoProcesso"), dataCustoProcesso),
+                valorSentenca == null ? builder.conjunction() : builder.equal(root.get("valorSentenca"), valorSentenca),
+                dataValorSentenca == null ? builder.conjunction() : builder.equal(root.get("dataValorSentenca"), dataValorSentenca)
         );
     }
 }

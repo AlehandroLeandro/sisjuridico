@@ -1,5 +1,7 @@
 package sisjuridico.carbocat.dto.request.update;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
 import sisjuridico.carbocat.enums.Action;
 import sisjuridico.carbocat.enums.Court;
@@ -7,6 +9,9 @@ import sisjuridico.carbocat.enums.InitialOrganization;
 import sisjuridico.carbocat.enums.Nature;
 import sisjuridico.carbocat.enums.PositionClient;
 import sisjuridico.carbocat.enums.Rit;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public record LawsuitUpdateDTO(
         @Positive Long numProcesso,
@@ -19,5 +24,15 @@ public record LawsuitUpdateDTO(
         InitialOrganization initialOrganization,
         PositionClient positionClient,
         Nature nature,
-        Action action) {
+        Action action,
+        @DecimalMin(value = "0.1") @Digits(integer = 10, fraction = 2) BigDecimal valorDaCausa,
+        LocalDate dataValorCausa,
+        @DecimalMin(value = "0.1") @Digits(integer = 10, fraction = 2) BigDecimal valorProvisionado,
+        LocalDate dataValorProvisionado,
+        @DecimalMin(value = "0.1") @Digits(integer = 10, fraction = 2) BigDecimal valorAcordo,
+        LocalDate dataValorAcordo,
+        @DecimalMin(value = "0.1") @Digits(integer = 10, fraction = 2) BigDecimal custoProcesso,
+        LocalDate dataCustoProcesso,
+        @DecimalMin(value = "0.1") @Digits(integer = 10, fraction = 2) BigDecimal valorSentenca,
+        LocalDate dataValorSentenca) {
 }

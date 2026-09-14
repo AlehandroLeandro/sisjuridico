@@ -2,11 +2,17 @@ package sisjuridico.carbocat.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
 
 import sisjuridico.carbocat.entities.Contract;
 
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSpecificationExecutor<Contract> {
-    
+    @Modifying
+    @Query("update Contract c set c.active = false where c.active = true and c.endDate is not null and c.endDate < :today")
+    int deactivateExpiredContracts(LocalDate today);
 }

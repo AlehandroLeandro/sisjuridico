@@ -10,6 +10,7 @@ public record ContractResponseDTO(
     String file,
     LocalDate startDate,
     LocalDate endDate,
+    LocalDate originalEndDate,
     Integer adviceLeftDays,
     BigDecimal value,
     String obs,

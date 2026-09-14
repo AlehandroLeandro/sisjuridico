@@ -27,6 +27,9 @@ security:
     expiration-seconds: ${REFRESH_TOKEN_EXPIRATION_SECONDS:604800}
 
 app:
+  contract:
+    expiration-cron: ${CONTRACT_EXPIRATION_CRON:0 0 0 * * *}
+    expiration-zone: ${CONTRACT_EXPIRATION_ZONE:America/Bahia}
   admin:
     name: ${ADMIN_NAME:Administrador}
     username: ${ADMIN_USERNAME:admin01}

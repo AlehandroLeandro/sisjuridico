@@ -22,6 +22,8 @@ import sisjuridico.carbocat.repository.LawsuitRepository;
 import sisjuridico.carbocat.repository.PersonRepository;
 import sisjuridico.carbocat.specification.LawsuitSpecifications;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -37,10 +39,17 @@ public class LawsuitService {
     public List<LawsuitResponseDTO> findByFilters(Long numProcesso, Long personId, Long lawyerId,
                                                    Long counterPartPersonId, Long counterPartLawyerId, Rit rit,
                                                    Court court, InitialOrganization initialOrganization,
-                                                   PositionClient positionClient, Nature nature, Action action) {
+                                                   PositionClient positionClient, Nature nature, Action action,
+                                                   BigDecimal valorDaCausa, LocalDate dataValorCausa,
+                                                   BigDecimal valorProvisionado, LocalDate dataValorProvisionado,
+                                                   BigDecimal valorAcordo, LocalDate dataValorAcordo,
+                                                   BigDecimal custoProcesso, LocalDate dataCustoProcesso,
+                                                   BigDecimal valorSentenca, LocalDate dataValorSentenca) {
         return lawsuitMapper.toResponseList(lawsuitRepository.findAll(
                 LawsuitSpecifications.withFilters(numProcesso, personId, lawyerId, counterPartPersonId,
-                        counterPartLawyerId, rit, court, initialOrganization, positionClient, nature, action)));
+                        counterPartLawyerId, rit, court, initialOrganization, positionClient, nature, action,
+                        valorDaCausa, dataValorCausa, valorProvisionado, dataValorProvisionado, valorAcordo,
+                        dataValorAcordo, custoProcesso, dataCustoProcesso, valorSentenca, dataValorSentenca)));
     }
 
     @Transactional(readOnly = true)
