@@ -1,6 +1,5 @@
 package sisjuridico.carbocat.dto.request.update;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 

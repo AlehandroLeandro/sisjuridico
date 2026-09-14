@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import sisjuridico.carbocat.dto.request.create.UserCreateDTO;
+import sisjuridico.carbocat.dto.request.update.UserPasswordUpdateDTO;
 import sisjuridico.carbocat.dto.request.update.UserUpdateDTO;
 import sisjuridico.carbocat.service.UserService;
 import sisjuridico.carbocat.dto.response.UserResponseDTO;
@@ -22,8 +23,11 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Role role) {
-        return ResponseEntity.ok(userService.findByFilters(name, role));
+            @RequestParam(required = false) String userName,
+            @RequestParam(required = false) Role role
+
+    ) {
+        return ResponseEntity.ok(userService.findByFilters(name, userName, role));
     }
 
     @GetMapping("/{id}")
@@ -48,6 +52,12 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO dto){
         return ResponseEntity.ok(userService.update(id, dto));
+    }
+
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<Void> updatePassword(@PathVariable Long id, @RequestBody @Valid UserPasswordUpdateDTO dto){
+        userService.updatePassword(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

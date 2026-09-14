@@ -35,4 +35,6 @@ build/
 ## IA ##
 .agents
 .codex
+graphify-out
+.claude
 

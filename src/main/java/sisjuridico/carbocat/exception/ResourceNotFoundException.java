@@ -9,7 +9,7 @@ public class ResourceNotFoundException extends RuntimeException {
         return byAttribute(resourceClass, "id", id);
     }
 
-    private static ResourceNotFoundException byAttribute(Class<?> resourceClass, String attribute, Object value) {
+    public static ResourceNotFoundException byAttribute(Class<?> resourceClass, String attribute, Object value) {
         return new ResourceNotFoundException(
                 resourceClass.getSimpleName()
                 + " not found with "

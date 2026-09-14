@@ -18,6 +18,7 @@ import sisjuridico.carbocat.entities.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
     User toEntity(UserCreateDTO dto);
 
     UserResponseDTO toResponse(User user);
@@ -26,8 +27,10 @@ public interface UserMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
     void updateEntityFromDto(UserUpdateDTO dto, @MappingTarget User user);
 
     @Mapping(target = "id", ignore = true )
+    @Mapping(target = "password", ignore = true)
     void updateEntityFromCreateDto(UserCreateDTO dto, @MappingTarget User user);
 }

@@ -13,7 +13,7 @@ public final class UserSpecifications {
     private UserSpecifications() {
     }
 
-    public static Specification<User> withFilters(String name, Role role) {
+    public static Specification<User> withFilters(String name, String userName, Role role) {
         return (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -21,6 +21,12 @@ public final class UserSpecifications {
                 predicates.add(builder.like(
                         builder.lower(root.get("name")),
                         "%" + name.toLowerCase() + "%"
+                ));
+            }
+            if (userName != null && !userName.isBlank()) {
+                predicates.add(builder.like(
+                        builder.lower(root.get("userName")),
+                        "%" + userName.toLowerCase() + "%"
                 ));
             }
 
