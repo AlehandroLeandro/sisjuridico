@@ -16,9 +16,11 @@ import java.util.List;
 public interface DocumentMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "contract", ignore = true)
+    @Mapping(target = "lawsuit", ignore = true)
     Document toEntity(DocumentCreateDTO dto);
 
     @Mapping(target = "contractId", source = "contract.id")
+    @Mapping(target = "lawsuitId", source = "lawsuit.id")
     DocumentResponseDTO toResponse(Document document);
 
     List<DocumentResponseDTO> toResponseList(List<Document> documents);
@@ -26,9 +28,11 @@ public interface DocumentMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "contract", ignore = true)
+    @Mapping(target = "lawsuit", ignore = true)
     void updateEntityFromDto(DocumentUpdateDTO dto, @MappingTarget Document document);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "contract", ignore = true)
+    @Mapping(target = "lawsuit", ignore = true)
     void updateEntityFromCreateDto(DocumentCreateDTO dto, @MappingTarget Document document);
 }

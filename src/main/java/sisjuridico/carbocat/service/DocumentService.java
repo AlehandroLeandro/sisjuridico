@@ -8,10 +8,12 @@ import sisjuridico.carbocat.dto.request.update.DocumentUpdateDTO;
 import sisjuridico.carbocat.dto.response.DocumentResponseDTO;
 import sisjuridico.carbocat.entities.Contract;
 import sisjuridico.carbocat.entities.Document;
+import sisjuridico.carbocat.entities.Lawsuit;
 import sisjuridico.carbocat.exception.ResourceNotFoundException;
 import sisjuridico.carbocat.mapper.DocumentMapper;
 import sisjuridico.carbocat.repository.ContractRepository;
 import sisjuridico.carbocat.repository.DocumentsRepository;
+import sisjuridico.carbocat.repository.LawsuitRepository;
 import sisjuridico.carbocat.specification.DocumentSpecifications;
 
 import java.util.List;
@@ -22,12 +24,13 @@ import java.util.List;
 public class DocumentService {
     private final DocumentsRepository documentsRepository;
     private final ContractRepository contractRepository;
+    private final LawsuitRepository lawsuitRepository;
     private final DocumentMapper documentMapper;
 
     @Transactional(readOnly = true)
-    public List<DocumentResponseDTO> findByFilters(String fileName, String contentType, Long contractId) {
+    public List<DocumentResponseDTO> findByFilters(String fileName, String contentType, Long contractId, Long lawsuitId) {
         return documentMapper.toResponseList(documentsRepository.findAll(
-                DocumentSpecifications.withFilters(fileName, contentType, contractId)));
+                DocumentSpecifications.withFilters(fileName, contentType, contractId, lawsuitId)));
     }
 
     @Transactional(readOnly = true)
@@ -37,21 +40,23 @@ public class DocumentService {
 
     public DocumentResponseDTO save(DocumentCreateDTO dto) {
         Document document = documentMapper.toEntity(dto);
-        document.setContract(findContract(dto.contractId()));
+        applyOwner(document, dto.contractId(), dto.lawsuitId());
         return documentMapper.toResponse(documentsRepository.save(document));
     }
 
     public DocumentResponseDTO updateFull(Long id, DocumentCreateDTO dto) {
         Document document = findEntity(id);
         documentMapper.updateEntityFromCreateDto(dto, document);
-        document.setContract(findContract(dto.contractId()));
+        applyOwner(document, dto.contractId(), dto.lawsuitId());
         return documentMapper.toResponse(documentsRepository.save(document));
     }
 
     public DocumentResponseDTO update(Long id, DocumentUpdateDTO dto) {
         Document document = findEntity(id);
         documentMapper.updateEntityFromDto(dto, document);
-        if (dto.contractId() != null) document.setContract(findContract(dto.contractId()));
+        if (dto.contractId() != null || dto.lawsuitId() != null) {
+            applyOwner(document, dto.contractId(), dto.lawsuitId());
+        }
         return documentMapper.toResponse(documentsRepository.save(document));
     }
 
@@ -68,5 +73,21 @@ public class DocumentService {
 
     private Contract findContract(Long id) {
         return contractRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.byId(Contract.class, id));
+    }
+
+    private Lawsuit findLawsuit(Long id) {
+        return lawsuitRepository.findById(id).orElseThrow(() -> ResourceNotFoundException.byId(Lawsuit.class, id));
+    }
+
+    private void applyOwner(Document document, Long contractId, Long lawsuitId) {
+        validateOwner(contractId, lawsuitId);
+        document.setContract(contractId == null ? null : findContract(contractId));
+        document.setLawsuit(lawsuitId == null ? null : findLawsuit(lawsuitId));
+    }
+
+    private void validateOwner(Long contractId, Long lawsuitId) {
+        if ((contractId == null && lawsuitId == null) || (contractId != null && lawsuitId != null)) {
+            throw new IllegalArgumentException("Informe contractId ou lawsuitId, mas não ambos.");
+        }
     }
 }

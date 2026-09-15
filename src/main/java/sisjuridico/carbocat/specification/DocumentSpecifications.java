@@ -8,11 +8,12 @@ public final class DocumentSpecifications {
     private DocumentSpecifications() {
     }
 
-    public static Specification<Document> withFilters(String fileName, String contentType, Long contractId) {
+    public static Specification<Document> withFilters(String fileName, String contentType, Long contractId, Long lawsuitId) {
         return (root, query, builder) -> builder.and(
                 fileName == null || fileName.isBlank() ? builder.conjunction() : builder.like(builder.lower(root.get("fileName")), "%" + fileName.toLowerCase() + "%"),
                 contentType == null || contentType.isBlank() ? builder.conjunction() : builder.equal(root.get("contentType"), contentType),
-                contractId == null ? builder.conjunction() : builder.equal(root.get("contract").get("id"), contractId)
+                contractId == null ? builder.conjunction() : builder.equal(root.get("contract").get("id"), contractId),
+                lawsuitId == null ? builder.conjunction() : builder.equal(root.get("lawsuit").get("id"), lawsuitId)
         );
     }
 }

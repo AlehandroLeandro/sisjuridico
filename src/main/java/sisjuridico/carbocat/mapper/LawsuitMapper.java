@@ -19,6 +19,7 @@ public interface LawsuitMapper {
     @Mapping(target = "lawyer", ignore = true)
     @Mapping(target = "counterPartPerson", ignore = true)
     @Mapping(target = "counterPartLawyer", ignore = true)
+    @Mapping(target = "documents", ignore = true)
     Lawsuit toEntity(LawsuitCreateDTO dto);
 
     @Mapping(target = "personId", source = "person.id")
@@ -35,6 +36,7 @@ public interface LawsuitMapper {
     @Mapping(target = "lawyer", ignore = true)
     @Mapping(target = "counterPartPerson", ignore = true)
     @Mapping(target = "counterPartLawyer", ignore = true)
+    @Mapping(target = "documents", ignore = true)
     void updateEntityFromDto(LawsuitUpdateDTO dto, @MappingTarget Lawsuit lawsuit);
 
     @Mapping(target = "id", ignore = true)
@@ -42,5 +44,6 @@ public interface LawsuitMapper {
     @Mapping(target = "lawyer", ignore = true)
     @Mapping(target = "counterPartPerson", ignore = true)
     @Mapping(target = "counterPartLawyer", ignore = true)
+    @Mapping(target = "documents", ignore = true)
     void updateEntityFromCreateDto(LawsuitCreateDTO dto, @MappingTarget Lawsuit lawsuit);
 }

@@ -13,6 +13,7 @@ import sisjuridico.carbocat.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Getter
@@ -121,4 +122,7 @@ public class Lawsuit {
 
     @Column(nullable = true)
     private LocalDate dataValorSentenca;
+
+    @OneToMany(mappedBy = "lawsuit")
+    private List<Document> documents;
 }

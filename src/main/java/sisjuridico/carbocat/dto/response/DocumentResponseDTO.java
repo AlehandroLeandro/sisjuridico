@@ -5,5 +5,6 @@ public record DocumentResponseDTO(
     String fileName,
     String contentType,
     String storagePath,
-    Long contractId
+    Long contractId,
+    Long lawsuitId
 ) {}

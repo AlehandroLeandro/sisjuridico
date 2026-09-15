@@ -35,7 +35,11 @@ public class Document {
     private String storagePath;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id", nullable = false)
+    @JoinColumn(name = "contract_id")
     private Contract contract;
+
+    @ManyToOne
+    @JoinColumn(name = "lawsuit_id")
+    private Lawsuit lawsuit;
 
 }

@@ -4,5 +4,6 @@ public record DocumentUpdateDTO(
     String fileName,
     String contentType,
     String storagePath,
-    Long contractId
+    Long contractId,
+    Long lawsuitId
 ) {}

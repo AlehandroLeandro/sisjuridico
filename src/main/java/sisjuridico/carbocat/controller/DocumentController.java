@@ -31,9 +31,10 @@ public class DocumentController {
     public ResponseEntity<List<DocumentResponseDTO>> findAll(
         @RequestParam(required = false) String fileName,
         @RequestParam(required = false) String contentType,
-        @RequestParam(required = false) Long contractId
+        @RequestParam(required = false) Long contractId,
+        @RequestParam(required = false) Long lawsuitId
     ) {
-        return ResponseEntity.ok(documentService.findByFilters(fileName, contentType, contractId));
+        return ResponseEntity.ok(documentService.findByFilters(fileName, contentType, contractId, lawsuitId));
     }
 
     @GetMapping("/{id}")
