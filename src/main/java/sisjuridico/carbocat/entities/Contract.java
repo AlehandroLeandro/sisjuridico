@@ -69,12 +69,12 @@ public class Contract {
     private boolean active;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "contractor_person_id", nullable = false)
     private Person contractor;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "contracted_person_id", nullable = false)
     private Person contracted;
 
@@ -82,9 +82,6 @@ public class Contract {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TypeContract typeContract;
-
-    @OneToMany(mappedBy = "contract")
-    private List<Document> documents;
 
     @OneToMany(mappedBy = "contract")
     private List<ContractExtension> extensions;

@@ -1,5 +1,6 @@
 package sisjuridico.carbocat.repository;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +17,7 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     void deleteByToken(String token);
 
     void deleteByUser(User user);
+
+    int deleteByExpiryDateBefore(Instant expiryDate);
     
 }

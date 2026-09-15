@@ -3,6 +3,9 @@ package sisjuridico.carbocat.service;
 import java.util.List;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,6 +75,19 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO update(Long id, UserUpdateDTO dto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User is not authenticated");
+        }
+
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+        if (!admin && (dto.role() != null || dto.userName() != null
+                || !(authentication.getPrincipal() instanceof User)
+                || !id.equals(((User) authentication.getPrincipal()).getId()))) {
+            throw new AccessDeniedException("Users can only update their own name and password");
+        }
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> ResourceNotFoundException.byId(User.class, id));
 

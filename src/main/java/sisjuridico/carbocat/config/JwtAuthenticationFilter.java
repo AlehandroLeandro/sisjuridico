@@ -10,6 +10,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sisjuridico.carbocat.entities.User;
 import sisjuridico.carbocat.repository.UserRepository;
 import sisjuridico.carbocat.service.JwtService;
@@ -20,6 +22,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -57,6 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception exception) {
+            log.warn("JWT authentication failed: {}: {}", exception.getClass().getSimpleName(), exception.getMessage());
             SecurityContextHolder.clearContext();
         }
 

@@ -15,7 +15,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ContractMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "documents", ignore = true)
     @Mapping(target = "extensions", ignore = true)
     @Mapping(target = "originalEndDate", ignore = true)
     @Mapping(target = "contractor", ignore = true)
@@ -30,7 +29,6 @@ public interface ContractMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "documents", ignore = true)
     @Mapping(target = "extensions", ignore = true)
     @Mapping(target = "originalEndDate", ignore = true)
     @Mapping(target = "contractor", ignore = true)
@@ -38,7 +36,6 @@ public interface ContractMapper {
     void updateEntityFromDto(ContractUpdateDTO dto, @MappingTarget Contract contract);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "documents", ignore = true)
     @Mapping(target = "extensions", ignore = true)
     @Mapping(target = "originalEndDate", ignore = true)
     @Mapping(target = "contractor", ignore = true)

@@ -31,7 +31,7 @@ public class ContractExtension {
     private Long id;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "contract_id", nullable = false)
     private Contract contract;
 

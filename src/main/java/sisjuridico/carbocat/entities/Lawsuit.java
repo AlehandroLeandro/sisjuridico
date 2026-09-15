@@ -13,7 +13,6 @@ import sisjuridico.carbocat.enums.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 
 @Getter
@@ -34,22 +33,22 @@ public class Lawsuit {
     private Long numProcesso;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "person_id", nullable = false)
     private Person person;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "lawyer_id", nullable = false)
     private Lawyer lawyer;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "counterPart_person_id", nullable = false)
     private Person counterPartPerson;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "counterPart_lawyer_id", nullable = false)
     private Lawyer counterPartLawyer;
 
@@ -123,6 +122,4 @@ public class Lawsuit {
     @Column(nullable = true)
     private LocalDate dataValorSentenca;
 
-    @OneToMany(mappedBy = "lawsuit")
-    private List<Document> documents;
 }

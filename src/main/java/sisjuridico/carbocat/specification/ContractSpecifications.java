@@ -11,10 +11,10 @@ public final class ContractSpecifications {
 
     public static Specification<Contract> withFilters(Boolean active, TypeContract typeContract, Long contractorId, Long contractedId) {
         return (root, query, builder) -> builder.and(
-                active == null ? builder.conjunction() : builder.equal(root.get("active"), active),
-                typeContract == null ? builder.conjunction() : builder.equal(root.get("typeContract"), typeContract),
-                contractorId == null ? builder.conjunction() : builder.equal(root.get("contractor").get("id"), contractorId),
-                contractedId == null ? builder.conjunction() : builder.equal(root.get("contracted").get("id"), contractedId)
+                SpecificationPredicates.equalOrTrue(root.get("active"), active, builder),
+                SpecificationPredicates.equalOrTrue(root.get("typeContract"), typeContract, builder),
+                SpecificationPredicates.equalOrTrue(root.get("contractor").get("id"), contractorId, builder),
+                SpecificationPredicates.equalOrTrue(root.get("contracted").get("id"), contractedId, builder)
         );
     }
 }

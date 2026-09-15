@@ -33,7 +33,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiryDate; //usar Instant para evitar bugs
 
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     

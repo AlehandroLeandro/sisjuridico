@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -30,6 +30,8 @@ app:
   contract:
     expiration-cron: ${CONTRACT_EXPIRATION_CRON:0 0 0 * * *}
     expiration-zone: ${CONTRACT_EXPIRATION_ZONE:America/Bahia}
+  refresh-token:
+    cleanup-cron: ${REFRESH_TOKEN_CLEANUP_CRON:0 0 1 * * *}
   admin:
     name: ${ADMIN_NAME:Administrador}
     username: ${ADMIN_USERNAME:admin01}

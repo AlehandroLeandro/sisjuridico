@@ -53,6 +53,11 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.updateFull(id, dto));
     }
 
+    /**
+     * Updates document metadata and, when one owner ID is supplied, transfers
+     * ownership to that contract or lawsuit and clears the previous owner.
+     * Omitting both owner IDs preserves the current ownership.
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<DocumentResponseDTO> update(@PathVariable Long id, @RequestBody @Valid DocumentUpdateDTO dto) {
         return ResponseEntity.ok(documentService.update(id, dto));
