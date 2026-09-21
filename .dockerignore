@@ -1,0 +1,10 @@
+target/
+.git/
+.gitattributes
+.idea/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+.specs/
+REVISAO_BACKEND.md
+*.md
+.env

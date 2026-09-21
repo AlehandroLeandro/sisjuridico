@@ -37,4 +37,6 @@ build/
 .codex
 graphify-out
 .claude
+.specs
 
+.env
