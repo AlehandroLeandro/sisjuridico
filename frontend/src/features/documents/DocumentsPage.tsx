@@ -390,8 +390,6 @@ export function DocumentsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtersKey]);
 
-  const contextLabel = useOwnerLabel(contractIdFilter, lawsuitIdFilter);
-
   function clearContextFilter() {
     setContractIdFilter(null);
     setContractFilterLabel(undefined);
@@ -448,17 +446,6 @@ export function DocumentsPage() {
         <h1 style={{ fontSize: 18, fontWeight: 700 }}>Documentos</h1>
         <Button onClick={() => setUploadOpen(true)}>Novo documento</Button>
       </div>
-
-      {contextLabel && (contractIdFilter !== null || lawsuitIdFilter !== null) && (
-        <div className="filter-bar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ fontSize: 13 }}>
-            Documentos de: <strong>{contextLabel}</strong>
-          </span>
-          <Button variant="outline" onClick={clearContextFilter}>
-            Ver todos os documentos
-          </Button>
-        </div>
-      )}
 
       <div className="filter-bar">
         <div className="filter-bar-row">
