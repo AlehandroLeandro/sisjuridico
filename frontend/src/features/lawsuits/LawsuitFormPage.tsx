@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../shared/ui/Button";
 import { SelectField, TextAreaField, TextField } from "../../shared/ui/Field";
+import { EnumSelect } from "../../shared/ui/EnumSelect";
 import { ConfirmDialog } from "../../shared/ui/Modal";
 import { ErrorState, ForbiddenState, LoadingState } from "../../shared/ui/States";
 import { PersonPicker } from "../../shared/pickers/PersonPicker";
@@ -426,7 +427,7 @@ export function LawsuitFormPage() {
                 Classificação
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: "14px 16px" }}>
-                <SelectField
+                <EnumSelect
                   label="Rito"
                   placeholder="Selecione"
                   options={enumOptions(RIT_LABELS)}
@@ -442,7 +443,7 @@ export function LawsuitFormPage() {
                   onChange={(e) => setForm((f) => ({ ...f, court: e.target.value }))}
                   error={errors.court}
                 />
-                <SelectField
+                <EnumSelect
                   label="Órgão de origem"
                   placeholder="Selecione"
                   options={enumOptions(INITIAL_ORGANIZATION_LABELS)}
@@ -450,7 +451,7 @@ export function LawsuitFormPage() {
                   onChange={(e) => setForm((f) => ({ ...f, initialOrganization: e.target.value }))}
                   error={errors.initialOrganization}
                 />
-                <SelectField
+                <EnumSelect
                   label="Natureza"
                   placeholder="Selecione"
                   options={enumOptions(NATURE_LABELS)}
@@ -458,7 +459,7 @@ export function LawsuitFormPage() {
                   onChange={(e) => setForm((f) => ({ ...f, nature: e.target.value }))}
                   error={errors.nature}
                 />
-                <SelectField
+                <EnumSelect
                   label="Ação"
                   placeholder="Selecione"
                   options={enumOptions(ACTION_LABELS)}
@@ -512,7 +513,7 @@ export function LawsuitFormPage() {
                   }}
                   error={errors.lawyerId}
                 />
-                <SelectField
+                <EnumSelect
                   label="Posição do cliente"
                   placeholder="Selecione"
                   options={enumOptions(POSITION_CLIENT_LABELS)}

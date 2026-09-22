@@ -4,7 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { getPerson } from "../../shared/api/people";
 import { PersonPicker } from "../../shared/pickers/PersonPicker";
-import { TextField, SelectField, TextAreaField } from "../../shared/ui/Field";
+import { TextField, TextAreaField } from "../../shared/ui/Field";
+import { EnumSelect } from "../../shared/ui/EnumSelect";
 import { Button } from "../../shared/ui/Button";
 import { Badge } from "../../shared/ui/Badge";
 import { Modal, ConfirmDialog } from "../../shared/ui/Modal";
@@ -355,7 +356,7 @@ function ContractDetailForm({ contractId, isCreate, contract, extensions, extens
                 disabled={!canWrite}
                 onChange={(e) => setForm((f) => ({ ...f, adviceLeftDays: e.target.value }))}
               />
-              <SelectField
+              <EnumSelect
                 label="Tipo de contrato"
                 value={form.typeContract}
                 placeholder="Selecione"

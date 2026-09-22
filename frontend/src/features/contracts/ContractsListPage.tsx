@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePagedQuery } from "../../shared/hooks/usePagedQuery";
 import { PersonPicker } from "../../shared/pickers/PersonPicker";
-import { SelectField } from "../../shared/ui/Field";
+import { EnumSelect } from "../../shared/ui/EnumSelect";
 import { Badge } from "../../shared/ui/Badge";
 import { Button } from "../../shared/ui/Button";
 import { Pagination } from "../../shared/ui/Pagination";
@@ -72,7 +72,7 @@ export function ContractsListPage() {
               setContractedLabel(opt?.label);
             }}
           />
-          <SelectField
+          <EnumSelect
             label="Tipo de contrato"
             value={typeContract}
             placeholder="Todos"

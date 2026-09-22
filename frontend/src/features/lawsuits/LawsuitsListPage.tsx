@@ -6,6 +6,7 @@ import { usePagedQuery } from "../../shared/hooks/usePagedQuery";
 import { Button } from "../../shared/ui/Button";
 import { Badge } from "../../shared/ui/Badge";
 import { SelectField, TextField } from "../../shared/ui/Field";
+import { EnumSelect } from "../../shared/ui/EnumSelect";
 import { Pagination } from "../../shared/ui/Pagination";
 import { ConfirmDialog } from "../../shared/ui/Modal";
 import { EmptyState, ErrorState, ForbiddenState, LoadingState } from "../../shared/ui/States";
@@ -101,7 +102,7 @@ export function LawsuitsListPage() {
             value={draft.court}
             onChange={(e) => setDraft((d) => ({ ...d, court: e.target.value }))}
           />
-          <SelectField
+          <EnumSelect
             label="Natureza"
             placeholder="Todas"
             options={enumOptions(NATURE_LABELS)}
