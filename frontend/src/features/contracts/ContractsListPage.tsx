@@ -48,6 +48,15 @@ export function ContractsListPage() {
     };
   }
 
+  function clearFilters() {
+    setTypeContract("");
+    setContractorId(null);
+    setContractorLabel(undefined);
+    setContractedId(null);
+    setContractedLabel(undefined);
+    setPage(0);
+  }
+
   const rows = tab === "A_VENCER" ? (data?.content ?? []).filter((c) => deriveContractStatus(c) === "A_VENCER") : data?.content ?? [];
 
   return (
@@ -80,6 +89,9 @@ export function ContractsListPage() {
             onChange={(e) => changeFilter(setTypeContract)(e.target.value)}
             fixed
           />
+          <Button variant="soft" onClick={clearFilters}>
+            Limpar
+          </Button>
         </div>
       </div>
 

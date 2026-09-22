@@ -16,25 +16,26 @@ import { COURT_LABELS, NATURE_LABELS, actionLabel, courtLabel, enumOptions, natu
 import { deleteLawsuit, listLawsuits, maskNumProcesso, unmaskNumProcesso, type Lawsuit, type LawsuitFilters } from "./api";
 import { displayName, useLawyerNames, usePersonNames } from "./useEntityNames";
 
-interface FilterDraft {
-  numProcesso: string;
-  personId: number | null;
-  personLabel: string;
-  lawyerId: number | null;
-  lawyerLabel: string;
-  court: string;
-  nature: string;
-}
-
-const EMPTY_DRAFT: FilterDraft = { numProcesso: "", personId: null, personLabel: "", lawyerId: null, lawyerLabel: "", court: "", nature: "" };
-
 export function LawsuitsListPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [draft, setDraft] = useState<FilterDraft>(EMPTY_DRAFT);
-  const [filters, setFilters] = useState<LawsuitFilters>({});
+  const [numProcessoText, setNumProcessoText] = useState("");
+  const [personId, setPersonId] = useState<number | null>(null);
+  const [personLabel, setPersonLabel] = useState<string | undefined>();
+  const [lawyerId, setLawyerId] = useState<number | null>(null);
+  const [lawyerLabel, setLawyerLabel] = useState<string | undefined>();
+  const [court, setCourt] = useState("");
+  const [nature, setNature] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<Lawsuit | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const filters: LawsuitFilters = {
+    numProcesso: numProcessoText ? unmaskNumProcesso(numProcessoText) : undefined,
+    personId: personId ?? undefined,
+    lawyerId: lawyerId ?? undefined,
+    court: court || undefined,
+    nature: nature || undefined,
+  };
 
   const { data, isLoading, isError, error, setPage, refetch } = usePagedQuery(["lawsuits"], filters, listLawsuits, { size: 20 });
 
@@ -42,21 +43,22 @@ export function LawsuitsListPage() {
   const personNames = usePersonNames(rows.map((r) => r.personId));
   const lawyerNames = useLawyerNames(rows.map((r) => r.lawyerId));
 
-  function applyFilters() {
-    setPage(0);
-    setFilters({
-      numProcesso: draft.numProcesso ? unmaskNumProcesso(draft.numProcesso) : undefined,
-      personId: draft.personId ?? undefined,
-      lawyerId: draft.lawyerId ?? undefined,
-      court: draft.court || undefined,
-      nature: draft.nature || undefined,
-    });
+  function changeFilter<T>(setter: (v: T) => void) {
+    return (v: T) => {
+      setter(v);
+      setPage(0);
+    };
   }
 
   function clearFilters() {
-    setDraft(EMPTY_DRAFT);
+    setNumProcessoText("");
+    setPersonId(null);
+    setPersonLabel(undefined);
+    setLawyerId(null);
+    setLawyerLabel(undefined);
+    setCourt("");
+    setNature("");
     setPage(0);
-    setFilters({});
   }
 
   async function confirmDelete() {
@@ -80,36 +82,41 @@ export function LawsuitsListPage() {
           <TextField
             label="Número do processo"
             placeholder="0000000-00.0000.0.00.0000"
-            value={draft.numProcesso}
-            onChange={(e) => setDraft((d) => ({ ...d, numProcesso: e.target.value }))}
+            value={numProcessoText}
+            onChange={(e) => changeFilter(setNumProcessoText)(e.target.value)}
           />
           <PersonPicker
             label="Cliente"
-            value={draft.personId}
-            valueLabel={draft.personLabel}
-            onChange={(id, option) => setDraft((d) => ({ ...d, personId: id, personLabel: option?.label ?? "" }))}
+            value={personId}
+            valueLabel={personLabel}
+            onChange={(id, option) => {
+              changeFilter(setPersonId)(id);
+              setPersonLabel(option?.label);
+            }}
           />
           <LawyerPicker
             label="Advogado"
-            value={draft.lawyerId}
-            valueLabel={draft.lawyerLabel}
-            onChange={(id, option) => setDraft((d) => ({ ...d, lawyerId: id, lawyerLabel: option?.label ?? "" }))}
+            value={lawyerId}
+            valueLabel={lawyerLabel}
+            onChange={(id, option) => {
+              changeFilter(setLawyerId)(id);
+              setLawyerLabel(option?.label);
+            }}
           />
           <SelectField
             label="Tribunal"
             placeholder="Todos"
             options={enumOptions(COURT_LABELS)}
-            value={draft.court}
-            onChange={(e) => setDraft((d) => ({ ...d, court: e.target.value }))}
+            value={court}
+            onChange={(e) => changeFilter(setCourt)(e.target.value)}
           />
           <EnumSelect
             label="Natureza"
             placeholder="Todas"
             options={enumOptions(NATURE_LABELS)}
-            value={draft.nature}
-            onChange={(e) => setDraft((d) => ({ ...d, nature: e.target.value }))}
+            value={nature}
+            onChange={(e) => changeFilter(setNature)(e.target.value)}
           />
-          <Button onClick={applyFilters}>Filtrar</Button>
           <Button variant="soft" onClick={clearFilters}>
             Limpar
           </Button>

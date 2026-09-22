@@ -403,6 +403,12 @@ export function DocumentsPage() {
     setSearchParams(next, { replace: true });
   }
 
+  function clearFilters() {
+    setFileName("");
+    setContentType("");
+    clearContextFilter();
+  }
+
   function invalidateList() {
     queryClient.invalidateQueries({ queryKey: ["documents"] });
   }
@@ -476,6 +482,9 @@ export function DocumentsPage() {
               setLawsuitFilterLabel(opt?.label);
             }}
           />
+          <Button variant="soft" onClick={clearFilters}>
+            Limpar
+          </Button>
         </div>
       </div>
 
