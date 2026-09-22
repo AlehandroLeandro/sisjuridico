@@ -24,12 +24,6 @@ public record LawsuitResponseDTO(
         Action action,
         BigDecimal valorDaCausa,
         LocalDate dataValorCausa,
-        BigDecimal valorProvisionado,
-        LocalDate dataValorProvisionado,
-        BigDecimal valorAcordo,
-        LocalDate dataValorAcordo,
-        BigDecimal custoProcesso,
-        LocalDate dataCustoProcesso,
-        BigDecimal valorSentenca,
-        LocalDate dataValorSentenca
+        LocalDate dataInicio,
+        String observacao
 ) {}
