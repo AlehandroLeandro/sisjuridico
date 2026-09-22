@@ -3,6 +3,7 @@ package sisjuridico.carbocat.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,6 +24,7 @@ import sisjuridico.carbocat.enums.Nature;
 import sisjuridico.carbocat.enums.PositionClient;
 import sisjuridico.carbocat.enums.Rit;
 import sisjuridico.carbocat.service.LawsuitService;
+import sisjuridico.carbocat.config.PageableRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -36,7 +38,7 @@ public class LawsuitController {
     private final LawsuitService lawsuitService;
 
     @GetMapping
-    public ResponseEntity<List<LawsuitResponseDTO>> findAll(
+    public ResponseEntity<Page<LawsuitResponseDTO>> findAll(
             @RequestParam(required = false) Long numProcesso,
             @RequestParam(required = false) Long personId,
             @RequestParam(required = false) Long lawyerId,
@@ -49,11 +51,15 @@ public class LawsuitController {
             @RequestParam(required = false) Nature nature,
             @RequestParam(required = false) Action action,
             @RequestParam(required = false) BigDecimal valorDaCausa,
-            @RequestParam(required = false) LocalDate dataValorCausa
+            @RequestParam(required = false) LocalDate dataValorCausa,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") List<String> sort
     ) {
         return ResponseEntity.ok(lawsuitService.findByFilters(
                 numProcesso, personId, lawyerId, counterPartPersonId, counterPartLawyerId, rit, court,
-                initialOrganization, positionClient, nature, action, valorDaCausa, dataValorCausa));
+                initialOrganization, positionClient, nature, action, valorDaCausa, dataValorCausa,
+                PageableRequest.of(page, size, sort, "id")));
     }
 
     @GetMapping("/{id}")

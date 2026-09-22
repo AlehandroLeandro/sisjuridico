@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +22,7 @@ import sisjuridico.carbocat.dto.request.create.PersonCreateDTO;
 import sisjuridico.carbocat.dto.request.update.PersonUpdateDTO;
 import sisjuridico.carbocat.dto.response.PersonResponseDTO;
 import sisjuridico.carbocat.service.PersonService;
+import sisjuridico.carbocat.config.PageableRequest;
 
 @RestController
 @RequestMapping("/people")
@@ -29,10 +31,14 @@ public class PersonController {
     private final PersonService personService;
 
     @GetMapping
-    public ResponseEntity<List<PersonResponseDTO>> findAll(
+    public ResponseEntity<Page<PersonResponseDTO>> findAll(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String cpfCnpj) {
-        return ResponseEntity.ok(personService.findByFilters(name, cpfCnpj));
+            @RequestParam(required = false) String cpfCnpj,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") List<String> sort) {
+        return ResponseEntity.ok(personService.findByFilters(name, cpfCnpj,
+                PageableRequest.of(page, size, sort, "id")));
     }
 
     @GetMapping("/{id}")

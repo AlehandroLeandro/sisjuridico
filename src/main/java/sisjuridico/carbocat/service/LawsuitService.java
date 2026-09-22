@@ -2,6 +2,8 @@ package sisjuridico.carbocat.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import sisjuridico.carbocat.dto.request.create.LawsuitCreateDTO;
 import sisjuridico.carbocat.dto.request.update.LawsuitUpdateDTO;
@@ -24,7 +26,6 @@ import sisjuridico.carbocat.specification.LawsuitSpecifications;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @Transactional
@@ -36,15 +37,15 @@ public class LawsuitService {
     private final LawsuitMapper lawsuitMapper;
 
     @Transactional(readOnly = true)
-    public List<LawsuitResponseDTO> findByFilters(Long numProcesso, Long personId, Long lawyerId,
+    public Page<LawsuitResponseDTO> findByFilters(Long numProcesso, Long personId, Long lawyerId,
                                                    Long counterPartPersonId, Long counterPartLawyerId, Rit rit,
                                                    Court court, InitialOrganization initialOrganization,
                                                    PositionClient positionClient, Nature nature, Action action,
-                                                   BigDecimal valorDaCausa, LocalDate dataValorCausa) {
-        return lawsuitMapper.toResponseList(lawsuitRepository.findAll(
+                                                   BigDecimal valorDaCausa, LocalDate dataValorCausa, Pageable pageable) {
+        return lawsuitRepository.findAll(
                 LawsuitSpecifications.withFilters(numProcesso, personId, lawyerId, counterPartPersonId,
                         counterPartLawyerId, rit, court, initialOrganization, positionClient, nature, action,
-                        valorDaCausa, dataValorCausa)));
+                        valorDaCausa, dataValorCausa), pageable).map(lawsuitMapper::toResponse);
     }
 
     @Transactional(readOnly = true)

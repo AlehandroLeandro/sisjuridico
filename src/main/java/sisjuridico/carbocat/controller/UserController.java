@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import sisjuridico.carbocat.dto.request.update.UserUpdateDTO;
 import sisjuridico.carbocat.service.UserService;
 import sisjuridico.carbocat.dto.response.UserResponseDTO;
 import sisjuridico.carbocat.enums.Role;
+import sisjuridico.carbocat.config.PageableRequest;
 @RestController
 @RequestMapping("/users")
 @AllArgsConstructor
@@ -21,13 +23,17 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>> findAll(
+    public ResponseEntity<Page<UserResponseDTO>> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String userName,
-            @RequestParam(required = false) Role role
+            @RequestParam(required = false) Role role,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") List<String> sort
 
     ) {
-        return ResponseEntity.ok(userService.findByFilters(name, userName, role));
+        return ResponseEntity.ok(userService.findByFilters(name, userName, role,
+                PageableRequest.of(page, size, sort, "id")));
     }
 
     @GetMapping("/{id}")

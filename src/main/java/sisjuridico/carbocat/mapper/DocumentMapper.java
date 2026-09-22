@@ -15,6 +15,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DocumentMapper {
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "sizeBytes", ignore = true)
+    @Mapping(target = "contentType", ignore = true)
+    @Mapping(target = "storagePath", ignore = true)
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "lawsuit", ignore = true)
     Document toEntity(DocumentCreateDTO dto);
@@ -27,11 +31,17 @@ public interface DocumentMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "sizeBytes", ignore = true)
+    @Mapping(target = "contentType", ignore = true)
+    @Mapping(target = "storagePath", ignore = true)
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "lawsuit", ignore = true)
     void updateEntityFromDto(DocumentUpdateDTO dto, @MappingTarget Document document);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "sizeBytes", ignore = true)
     @Mapping(target = "contract", ignore = true)
     @Mapping(target = "lawsuit", ignore = true)
     void updateEntityFromCreateDto(DocumentCreateDTO dto, @MappingTarget Document document);

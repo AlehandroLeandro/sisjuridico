@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import lombok.AllArgsConstructor;
 
@@ -40,10 +42,9 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserResponseDTO> findByFilters(String name, String userName, Role role) {
-        return userMapper.toResponseList(
-                userRepository.findAll(UserSpecifications.withFilters(name, userName, role))
-        );
+    public Page<UserResponseDTO> findByFilters(String name, String userName, Role role, Pageable pageable) {
+        return userRepository.findAll(UserSpecifications.withFilters(name, userName, role), pageable)
+                .map(userMapper::toResponse);
     }
 
     @Transactional(readOnly = true)

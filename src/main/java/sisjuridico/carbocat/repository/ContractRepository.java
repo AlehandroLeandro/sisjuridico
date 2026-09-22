@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import sisjuridico.carbocat.entities.Contract;
 
@@ -15,4 +16,6 @@ public interface ContractRepository extends JpaRepository<Contract, Long>, JpaSp
     @Modifying
     @Query("update Contract c set c.active = false where c.active = true and c.endDate is not null and c.endDate < :today")
     int deactivateExpiredContracts(LocalDate today);
+
+    List<Contract> findTop4ByActiveTrueAndEndDateBetweenOrderByEndDateAsc(LocalDate from, LocalDate to);
 }

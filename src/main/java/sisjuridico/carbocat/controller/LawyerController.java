@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,6 +22,7 @@ import sisjuridico.carbocat.dto.request.create.LawyerCreateDTO;
 import sisjuridico.carbocat.dto.request.update.LawyerUpdateDTO;
 import sisjuridico.carbocat.dto.response.LawyerResponseDTO;
 import sisjuridico.carbocat.service.LawyerService;
+import sisjuridico.carbocat.config.PageableRequest;
 
 @RestController
 @RequestMapping("/lawyers")
@@ -29,13 +31,16 @@ public class LawyerController {
     private final LawyerService lawyerService;
 
     @GetMapping
-    public ResponseEntity<List<LawyerResponseDTO>> findAll(
+    public ResponseEntity<Page<LawyerResponseDTO>> findAll(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String cpfCnpj,
-            @RequestParam(required = false) String oab
+            @RequestParam(required = false) String oab,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id,asc") List<String> sort
     ) {
         return ResponseEntity.ok(
-                lawyerService.findByFilters(name, cpfCnpj, oab));
+                lawyerService.findByFilters(name, cpfCnpj, oab, PageableRequest.of(page, size, sort, "id")));
     }
 
     @GetMapping("/{id}")

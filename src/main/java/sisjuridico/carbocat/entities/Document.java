@@ -8,7 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.PrePersist;
 import org.hibernate.annotations.Check;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,12 @@ public class Document {
     @Column(nullable = false)
     private String storagePath;
 
+    @Column(nullable = false)
+    private long sizeBytes;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "contract_id")
     private Contract contract;
@@ -44,5 +52,12 @@ public class Document {
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "lawsuit_id")
     private Lawsuit lawsuit;
+
+    @PrePersist
+    void setCreatedAt() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 
 }

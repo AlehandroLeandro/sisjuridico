@@ -2,6 +2,8 @@ package sisjuridico.carbocat.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import sisjuridico.carbocat.dto.request.create.ContractExtensionCreateDTO;
 import sisjuridico.carbocat.dto.request.create.ContractCreateDTO;
@@ -34,9 +36,10 @@ public class ContractService {
     private final ContractExtensionMapper contractExtensionMapper;
 
     @Transactional(readOnly = true)
-    public List<ContractResponseDTO> findByFilters(Boolean active, TypeContract typeContract, Long contractorId, Long contractedId) {
-        return contractMapper.toResponseList(contractRepository.findAll(
-                ContractSpecifications.withFilters(active, typeContract, contractorId, contractedId)));
+    public Page<ContractResponseDTO> findByFilters(Boolean active, TypeContract typeContract, Long contractorId,
+                                                    Long contractedId, Pageable pageable) {
+        return contractRepository.findAll(ContractSpecifications.withFilters(active, typeContract, contractorId, contractedId), pageable)
+                .map(contractMapper::toResponse);
     }
 
     @Transactional(readOnly = true)

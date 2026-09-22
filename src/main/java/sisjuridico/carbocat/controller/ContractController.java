@@ -3,6 +3,7 @@ package sisjuridico.carbocat.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +21,7 @@ import sisjuridico.carbocat.dto.response.ContractExtensionResponseDTO;
 import sisjuridico.carbocat.dto.response.ContractResponseDTO;
 import sisjuridico.carbocat.enums.TypeContract;
 import sisjuridico.carbocat.service.ContractService;
+import sisjuridico.carbocat.config.PageableRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -31,11 +33,15 @@ public class ContractController {
     private final ContractService contractService;
 
     @GetMapping
-    public ResponseEntity<List<ContractResponseDTO>> findAll(@RequestParam(required = false) Boolean active,
+    public ResponseEntity<Page<ContractResponseDTO>> findAll(@RequestParam(required = false) Boolean active,
                                                               @RequestParam(required = false) TypeContract typeContract,
                                                               @RequestParam(required = false) Long contractorId,
-                                                              @RequestParam(required = false) Long contractedId) {
-        return ResponseEntity.ok(contractService.findByFilters(active, typeContract, contractorId, contractedId));
+                                                              @RequestParam(required = false) Long contractedId,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "20") int size,
+                                                              @RequestParam(defaultValue = "id,asc") List<String> sort) {
+        return ResponseEntity.ok(contractService.findByFilters(active, typeContract, contractorId, contractedId,
+                PageableRequest.of(page, size, sort, "id")));
     }
 
     @GetMapping("/{id}")

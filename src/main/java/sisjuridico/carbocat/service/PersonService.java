@@ -3,6 +3,8 @@ package sisjuridico.carbocat.service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import sisjuridico.carbocat.dto.request.create.PersonCreateDTO;
 import sisjuridico.carbocat.dto.request.update.PersonUpdateDTO;
 import sisjuridico.carbocat.dto.response.PersonResponseDTO;
@@ -28,10 +30,9 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public List<PersonResponseDTO> findByFilters(String name, String cpfCnpj) {
-        return personMapper.toResponseList(
-                personRepository.findAll(PersonSpecifications.withFilters(name, cpfCnpj))
-        );
+    public Page<PersonResponseDTO> findByFilters(String name, String cpfCnpj, Pageable pageable) {
+        return personRepository.findAll(PersonSpecifications.withFilters(name, cpfCnpj), pageable)
+                .map(personMapper::toResponse);
     }
 
     @Transactional(readOnly = true)
