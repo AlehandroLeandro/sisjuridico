@@ -207,5 +207,8 @@ export const ROLE_LABELS: Record<string, string> = {
 };
 export const roleLabel = withFallback(ROLE_LABELS);
 
+/** Sorted alphabetically by label (PT-BR collation), never by the enum key's declaration order — per UXFIX-06/07. */
 export const enumOptions = (labels: Record<string, string>) =>
-  Object.entries(labels).map(([value, label]) => ({ value, label }));
+  Object.entries(labels)
+    .map(([value, label]) => ({ value, label }))
+    .sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
