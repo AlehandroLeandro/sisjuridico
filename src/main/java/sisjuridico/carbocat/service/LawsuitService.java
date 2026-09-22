@@ -40,16 +40,11 @@ public class LawsuitService {
                                                    Long counterPartPersonId, Long counterPartLawyerId, Rit rit,
                                                    Court court, InitialOrganization initialOrganization,
                                                    PositionClient positionClient, Nature nature, Action action,
-                                                   BigDecimal valorDaCausa, LocalDate dataValorCausa,
-                                                   BigDecimal valorProvisionado, LocalDate dataValorProvisionado,
-                                                   BigDecimal valorAcordo, LocalDate dataValorAcordo,
-                                                   BigDecimal custoProcesso, LocalDate dataCustoProcesso,
-                                                   BigDecimal valorSentenca, LocalDate dataValorSentenca) {
+                                                   BigDecimal valorDaCausa, LocalDate dataValorCausa) {
         return lawsuitMapper.toResponseList(lawsuitRepository.findAll(
                 LawsuitSpecifications.withFilters(numProcesso, personId, lawyerId, counterPartPersonId,
                         counterPartLawyerId, rit, court, initialOrganization, positionClient, nature, action,
-                        valorDaCausa, dataValorCausa, valorProvisionado, dataValorProvisionado, valorAcordo,
-                        dataValorAcordo, custoProcesso, dataCustoProcesso, valorSentenca, dataValorSentenca)));
+                        valorDaCausa, dataValorCausa)));
     }
 
     @Transactional(readOnly = true)
