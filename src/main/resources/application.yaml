@@ -3,9 +3,9 @@ spring:
     name: carbocat
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/sisjuridico}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -21,10 +21,10 @@ spring:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:uma-chave-local-muito-grande-apenas-para-desenvolvimento}
-    expiration-seconds: ${JWT_EXPIRATION_SECONDS:900}
+    secret: ${JWT_SECRET}
+    expiration-seconds: ${JWT_EXPIRATION_SECONDS}
   refresh-token:
-    expiration-seconds: ${REFRESH_TOKEN_EXPIRATION_SECONDS:604800}
+    expiration-seconds: ${REFRESH_TOKEN_EXPIRATION_SECONDS}
 
 app:
   contract:
@@ -33,6 +33,6 @@ app:
   refresh-token:
     cleanup-cron: ${REFRESH_TOKEN_CLEANUP_CRON:0 0 1 * * *}
   admin:
-    name: ${ADMIN_NAME:Administrador}
-    username: ${ADMIN_USERNAME:admin01}
-    password: ${ADMIN_PASSWORD:admin123}
+    name: ${ADMIN_NAME}
+    username: ${ADMIN_USERNAME}
+    password: ${ADMIN_PASSWORD}

@@ -13,6 +13,8 @@ services:
       ADMIN_NAME: ${ADMIN_NAME}
       ADMIN_USERNAME: ${ADMIN_USERNAME}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
     depends_on:
       db:
         condition: service_healthy
