@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createPerson, deletePerson, listPeople, updatePerson, type Person, type PersonFilters } from "../../shared/api/people";
+import { createPerson, deletePerson, listPeople, reactivatePerson, updatePerson, type Person, type PersonFilters } from "../../shared/api/people";
+import { useAuth } from "../auth/AuthContext";
 import { usePagedQuery } from "../../shared/hooks/usePagedQuery";
 import { Button } from "../../shared/ui/Button";
 import { TextField } from "../../shared/ui/Field";
@@ -36,9 +37,11 @@ const emptyForm: PersonFormState = { name: "", cpfCnpjDigits: "" };
 
 export function PeoplePage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [nameFilter, setNameFilter] = useState("");
   const [cpfCnpjFilter, setCpfCnpjFilter] = useState("");
   const [tab, setTab] = useState<Tab>("all");
+  const [showInactive, setShowInactive] = useState(false);
 
   const [editing, setEditing] = useState<Person | null>(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -48,13 +51,15 @@ export function PeoplePage() {
 
   const [deleting, setDeleting] = useState<Person | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [reactivateError, setReactivateError] = useState<string | null>(null);
 
   const filters: PersonFilters = useMemo(
     () => ({
       name: nameFilter.trim() || undefined,
       cpfCnpj: cpfCnpjFilter.trim() ? onlyDigits(cpfCnpjFilter) : undefined,
+      active: !showInactive,
     }),
-    [nameFilter, cpfCnpjFilter],
+    [nameFilter, cpfCnpjFilter, showInactive],
   );
 
   const { data, isLoading, isError, error, setPage } = usePagedQuery(["people"], filters, listPeople);
@@ -93,6 +98,15 @@ export function PeoplePage() {
       setDeleteError(null);
     },
     onError: (err) => setDeleteError(getErrorMessage(err, "Não foi possível excluir a pessoa.")),
+  });
+
+  const reactivateMutation = useMutation({
+    mutationFn: reactivatePerson,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["people"] });
+      setReactivateError(null);
+    },
+    onError: (err) => setReactivateError(getErrorMessage(err, "Não foi possível reativar a pessoa.")),
   });
 
   function openCreate() {
@@ -138,6 +152,11 @@ export function PeoplePage() {
     setPage(0);
   }
 
+  function toggleInactive() {
+    setShowInactive((v) => !v);
+    setPage(0);
+  }
+
   if (forbidden) return <ForbiddenState />;
 
   const saving = createMutation.isPending || updateMutation.isPending;
@@ -178,18 +197,24 @@ export function PeoplePage() {
               </button>
             ))}
           </div>
+          <Button variant={showInactive ? "primary" : "soft"} onClick={toggleInactive}>
+            Mostrar desabilitados
+          </Button>
           <Button onClick={openCreate}>+ Cadastrar</Button>
         </div>
       </div>
 
       <div className="card">
+        {reactivateError && (
+          <div style={{ padding: "12px 18px 0", color: "var(--color-danger-text)", fontSize: 13 }}>{reactivateError}</div>
+        )}
         <div className="table-scroll">
           {isLoading ? (
             <LoadingState />
           ) : isError ? (
             <ErrorState />
           ) : rows.length === 0 ? (
-            <EmptyState />
+            <EmptyState label={showInactive ? "Nenhuma pessoa desabilitada." : undefined} />
           ) : (
             <table className="data-table">
               <thead>
@@ -209,9 +234,17 @@ export function PeoplePage() {
                         <Button variant="ghost" onClick={() => openEdit(p)}>
                           Editar
                         </Button>
-                        <Button variant="ghost" style={{ color: "var(--color-danger-text)" }} onClick={() => setDeleting(p)}>
-                          Excluir
-                        </Button>
+                        {showInactive ? (
+                          user?.role === "ADMIN" && (
+                            <Button variant="ghost" onClick={() => reactivateMutation.mutate(p.id)}>
+                              Reativar
+                            </Button>
+                          )
+                        ) : (
+                          <Button variant="ghost" style={{ color: "var(--color-danger-text)" }} onClick={() => setDeleting(p)}>
+                            Excluir
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -255,7 +288,7 @@ export function PeoplePage() {
       {deleting && (
         <ConfirmDialog
           title="Excluir pessoa"
-          message={deleteError ?? `Confirma a exclusão de "${deleting.name}"?`}
+          message={deleteError ?? `Excluir "${deleting.name}"? A pessoa deixará de aparecer na listagem.`}
           confirmLabel="Excluir"
           danger
           onConfirm={() => deleteMutation.mutate(deleting.id)}

@@ -7,12 +7,16 @@ export interface Lawyer {
   name: string;
   cpfCnpj: string | null;
   oab: string | null;
+  /** Soft delete flag — DELETE sets this false instead of removing the record. Per frontend-soft-delete spec. */
+  active: boolean;
 }
 
 export interface LawyerFilters extends PageParams {
   name?: string;
   cpfCnpj?: string;
   oab?: string;
+  /** Defaults to true server-side when omitted — pass `false` to list disabled records instead. */
+  active?: boolean;
 }
 
 export function listLawyers(params: LawyerFilters = {}) {
@@ -27,10 +31,16 @@ export function createLawyer(input: { name: string; cpfCnpj?: string; oab?: stri
   return api.post<Lawyer>("lawyers", input).then((r) => r.data);
 }
 
-export function updateLawyer(id: number, input: Partial<{ name: string; cpfCnpj: string; oab: string }>) {
+export function updateLawyer(id: number, input: Partial<{ name: string; cpfCnpj: string; oab: string; active: boolean }>) {
   return api.patch<Lawyer>(`lawyers/${id}`, input).then((r) => r.data);
 }
 
+/** Soft delete — the record is disabled, not removed. Per frontend-soft-delete spec. */
 export function deleteLawyer(id: number) {
   return api.delete(`lawyers/${id}`);
+}
+
+/** ADMIN-only per SOFTDEL-08..10. */
+export function reactivateLawyer(id: number) {
+  return updateLawyer(id, { active: true });
 }

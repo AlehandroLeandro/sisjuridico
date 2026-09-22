@@ -13,12 +13,14 @@ import { EmptyState, ErrorState, ForbiddenState, LoadingState } from "../../shar
 import { PersonPicker } from "../../shared/pickers/PersonPicker";
 import { LawyerPicker } from "../../shared/pickers/LawyerPicker";
 import { COURT_LABELS, NATURE_LABELS, actionLabel, courtLabel, enumOptions, natureLabel, ritLabel } from "../../shared/enums/labels";
-import { deleteLawsuit, listLawsuits, maskNumProcesso, unmaskNumProcesso, type Lawsuit, type LawsuitFilters } from "./api";
+import { deleteLawsuit, listLawsuits, maskNumProcesso, reactivateLawsuit, unmaskNumProcesso, type Lawsuit, type LawsuitFilters } from "./api";
 import { displayName, useLawyerNames, usePersonNames } from "./useEntityNames";
+import { useAuth } from "../auth/AuthContext";
 
 export function LawsuitsListPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [numProcessoText, setNumProcessoText] = useState("");
   const [personId, setPersonId] = useState<number | null>(null);
   const [personLabel, setPersonLabel] = useState<string | undefined>();
@@ -26,8 +28,10 @@ export function LawsuitsListPage() {
   const [lawyerLabel, setLawyerLabel] = useState<string | undefined>();
   const [court, setCourt] = useState("");
   const [nature, setNature] = useState("");
+  const [showInactive, setShowInactive] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Lawsuit | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [reactivateError, setReactivateError] = useState<string | null>(null);
 
   const filters: LawsuitFilters = {
     numProcesso: numProcessoText ? unmaskNumProcesso(numProcessoText) : undefined,
@@ -35,6 +39,7 @@ export function LawsuitsListPage() {
     lawyerId: lawyerId ?? undefined,
     court: court || undefined,
     nature: nature || undefined,
+    active: !showInactive,
   };
 
   const { data, isLoading, isError, error, setPage, refetch } = usePagedQuery(["lawsuits"], filters, listLawsuits, { size: 20 });
@@ -58,6 +63,7 @@ export function LawsuitsListPage() {
     setLawyerLabel(undefined);
     setCourt("");
     setNature("");
+    setShowInactive(false);
     setPage(0);
   }
 
@@ -70,6 +76,16 @@ export function LawsuitsListPage() {
       setDeleteTarget(null);
     } catch {
       setDeleteError("Não foi possível excluir o processo.");
+    }
+  }
+
+  async function reactivate(row: Lawsuit) {
+    setReactivateError(null);
+    try {
+      await reactivateLawsuit(row.id);
+      await queryClient.invalidateQueries({ queryKey: ["lawsuits"] });
+    } catch {
+      setReactivateError("Não foi possível reativar o processo.");
     }
   }
 
@@ -117,6 +133,12 @@ export function LawsuitsListPage() {
             value={nature}
             onChange={(e) => changeFilter(setNature)(e.target.value)}
           />
+          <Button
+            variant={showInactive ? "primary" : "soft"}
+            onClick={() => changeFilter(setShowInactive)(!showInactive)}
+          >
+            Mostrar desabilitados
+          </Button>
           <Button variant="soft" onClick={clearFilters}>
             Limpar
           </Button>
@@ -126,15 +148,22 @@ export function LawsuitsListPage() {
       <div className="card">
         <div className="card-header">
           <div style={{ fontSize: 13.5, color: "var(--color-text-faint)" }}>
-            <strong style={{ color: "var(--color-text)" }}>{data?.totalElements ?? 0}</strong> processos
+            <strong style={{ color: "var(--color-text)" }}>{data?.totalElements ?? 0}</strong>{" "}
+            {showInactive ? "processos desabilitados" : "processos"}
           </div>
           <Button onClick={() => navigate("/processos/novo")}>+ Novo processo</Button>
         </div>
 
+        {reactivateError && (
+          <div style={{ padding: "0 18px 12px", color: "var(--color-danger-text)", fontSize: 13 }}>{reactivateError}</div>
+        )}
+
         {isLoading && <LoadingState />}
         {isError && forbidden && <ForbiddenState />}
         {isError && !forbidden && <ErrorState label="Não foi possível carregar os processos." />}
-        {!isLoading && !isError && rows.length === 0 && <EmptyState label="Nenhum processo encontrado." />}
+        {!isLoading && !isError && rows.length === 0 && (
+          <EmptyState label={showInactive ? "Nenhum processo desabilitado." : "Nenhum processo encontrado."} />
+        )}
 
         {!isLoading && !isError && rows.length > 0 && (
           <div className="table-scroll">
@@ -168,9 +197,17 @@ export function LawsuitsListPage() {
                         <Button variant="ghost" onClick={() => navigate(`/processos/${row.id}`)}>
                           Detalhes
                         </Button>
-                        <Button variant="ghost" style={{ color: "var(--color-danger-text)" }} onClick={() => setDeleteTarget(row)}>
-                          Excluir
-                        </Button>
+                        {showInactive ? (
+                          user?.role === "ADMIN" && (
+                            <Button variant="ghost" onClick={() => void reactivate(row)}>
+                              Reativar
+                            </Button>
+                          )
+                        ) : (
+                          <Button variant="ghost" style={{ color: "var(--color-danger-text)" }} onClick={() => setDeleteTarget(row)}>
+                            Excluir
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -194,7 +231,7 @@ export function LawsuitsListPage() {
       {deleteTarget && (
         <ConfirmDialog
           title="Excluir processo"
-          message={`Excluir o processo ${maskNumProcesso(deleteTarget.numProcesso)}? Esta ação não pode ser desfeita.${deleteError ? ` ${deleteError}` : ""}`}
+          message={`Excluir o processo ${maskNumProcesso(deleteTarget.numProcesso)}? Ele deixará de aparecer na listagem.${deleteError ? ` ${deleteError}` : ""}`}
           confirmLabel="Excluir"
           danger
           onConfirm={confirmDelete}

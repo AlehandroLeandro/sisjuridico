@@ -6,6 +6,8 @@ export interface MockPerson {
   id: number;
   name: string;
   cpfCnpj: string | null;
+  /** Soft delete flag — DELETE sets this false instead of removing the row. Per frontend-soft-delete spec. */
+  active: boolean;
 }
 
 export interface MockLawyer {
@@ -13,6 +15,7 @@ export interface MockLawyer {
   name: string;
   cpfCnpj: string | null;
   oab: string | null;
+  active: boolean;
 }
 
 export interface MockLawsuit {
@@ -33,6 +36,7 @@ export interface MockLawsuit {
   dataValorCausa: string | null;
   dataInicio: string;
   observacao: string | null;
+  active: boolean;
 }
 
 export interface MockContractExtension {
@@ -90,18 +94,18 @@ export interface MockEvento {
 }
 
 export const people: MockPerson[] = [
-  { id: 1, name: "Construtora Vale Verde Ltda.", cpfCnpj: "12345678000190" },
-  { id: 2, name: "Nutrimix Alimentos S.A.", cpfCnpj: "23456789000101" },
-  { id: 3, name: "Transportes Aurora Ltda.", cpfCnpj: "34567890000112" },
-  { id: 4, name: "Beatriz Nogueira Faria", cpfCnpj: "12345678901" },
-  { id: 5, name: "Roberto Salles Pinheiro", cpfCnpj: "23456789012" },
+  { id: 1, name: "Construtora Vale Verde Ltda.", cpfCnpj: "12345678000190", active: true },
+  { id: 2, name: "Nutrimix Alimentos S.A.", cpfCnpj: "23456789000101", active: true },
+  { id: 3, name: "Transportes Aurora Ltda.", cpfCnpj: "34567890000112", active: true },
+  { id: 4, name: "Beatriz Nogueira Faria", cpfCnpj: "12345678901", active: true },
+  { id: 5, name: "Roberto Salles Pinheiro", cpfCnpj: "23456789012", active: true },
 ];
 
 export const lawyers: MockLawyer[] = [
-  { id: 1, name: "Marina Andrade", cpfCnpj: "34567890123", oab: "218440" },
-  { id: 2, name: "Camila Rocha Lima", cpfCnpj: "45678901234", oab: "245187" },
-  { id: 3, name: "Paulo Menezes", cpfCnpj: "56789012345", oab: "198320" },
-  { id: 4, name: "Henrique Tavares", cpfCnpj: "67890123456", oab: "134902" },
+  { id: 1, name: "Marina Andrade", cpfCnpj: "34567890123", oab: "218440", active: true },
+  { id: 2, name: "Camila Rocha Lima", cpfCnpj: "45678901234", oab: "245187", active: true },
+  { id: 3, name: "Paulo Menezes", cpfCnpj: "56789012345", oab: "198320", active: true },
+  { id: 4, name: "Henrique Tavares", cpfCnpj: "67890123456", oab: "134902", active: true },
 ];
 
 export const lawsuits: MockLawsuit[] = [
@@ -110,36 +114,42 @@ export const lawsuits: MockLawsuit[] = [
     rit: "PROCEDIMENTO_COMUM", court: "JUSTICA_ESTADUAL", initialOrganization: "VARA_CIVEL", positionClient: "AUTOR",
     nature: "DIREITO_CIVIL", action: "ACAO_DE_COBRANCA", valorDaCausa: 185000, dataValorCausa: "2025-08-26",
     dataInicio: "2025-08-26", observacao: null,
+    active: true,
   },
   {
     id: 2, numProcesso: "00334218820245020035", personId: 2, lawyerId: 2, counterPartPersonId: 3, counterPartLawyerId: 3,
     rit: "SUMARISSIMO", court: "JUSTICA_DO_TRABALHO", initialOrganization: "VARA_DO_TRABALHO", positionClient: "REU",
     nature: "DIREITO_DO_TRABALHO", action: "ACAO_DE_INDENIZACAO", valorDaCausa: 42000, dataValorCausa: "2024-11-10",
     dataInicio: "2024-11-10", observacao: "Reclamatória trabalhista, testemunhas arroladas.",
+    active: true,
   },
   {
     id: 3, numProcesso: "50098872120254036100", personId: 3, lawyerId: 3, counterPartPersonId: 2, counterPartLawyerId: 2,
     rit: "PROCEDIMENTO_COMUM", court: "JUSTICA_FEDERAL", initialOrganization: "VARA_DE_EXECUCOES_FISCAIS", positionClient: "EXECUTADO",
     nature: "DIREITO_TRIBUTARIO", action: "EXECUCAO_FISCAL", valorDaCausa: 96000, dataValorCausa: "2025-05-02",
     dataInicio: "2025-05-02", observacao: null,
+    active: true,
   },
   {
     id: 4, numProcesso: "10045120920268260053", personId: 4, lawyerId: 1, counterPartPersonId: 1, counterPartLawyerId: 4,
     rit: "JUIZADO_ESPECIAL", court: "JUIZADO_ESPECIAL_CIVEL", initialOrganization: "JUIZADO_ESPECIAL", positionClient: "AUTOR",
     nature: "CONSUMIDOR", action: "ACAO_DE_INDENIZACAO", valorDaCausa: 15000, dataValorCausa: "2026-01-15",
     dataInicio: "2026-01-15", observacao: null,
+    active: true,
   },
   {
     id: 5, numProcesso: "10239984420258260100", personId: 2, lawyerId: 3, counterPartPersonId: 1, counterPartLawyerId: 1,
     rit: "PROCEDIMENTO_COMUM", court: "JUSTICA_ESTADUAL", initialOrganization: "VARA_CIVEL", positionClient: "REU",
     nature: "EMPRESARIAL", action: "ACAO_RESCISORIA", valorDaCausa: 220000, dataValorCausa: "2025-06-20",
     dataInicio: "2025-06-20", observacao: null,
+    active: true,
   },
   {
     id: 6, numProcesso: "00412771320255020011", personId: 1, lawyerId: 2, counterPartPersonId: 3, counterPartLawyerId: 3,
     rit: "PROCEDIMENTO_ESPECIAL", court: "JUSTICA_DO_TRABALHO", initialOrganization: "VARA_DO_TRABALHO", positionClient: "REU",
     nature: "DIREITO_DO_TRABALHO", action: "CUMPRIMENTO_DE_SENTENCA", valorDaCausa: 31000, dataValorCausa: "2025-03-14",
     dataInicio: "2025-03-14", observacao: null,
+    active: true,
   },
 ];
 

@@ -10,7 +10,7 @@ import {
   people,
   users,
 } from "./fixtures";
-import { matchesText, nextId, paginate } from "./paginate";
+import { matchesActive, matchesText, nextId, paginate } from "./paginate";
 import { issueTokens, publicUser, refreshAccessToken, revokeRefreshToken, userFromAuthHeader } from "./session";
 import { NATURE_LABELS } from "../shared/enums/labels";
 
@@ -68,7 +68,10 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const url = new URL(request.url);
     const filtered = people.filter(
-      (p) => matchesText(p.name, url.searchParams.get("name")) && matchesText(p.cpfCnpj, url.searchParams.get("cpfCnpj")),
+      (p) =>
+        matchesText(p.name, url.searchParams.get("name")) &&
+        matchesText(p.cpfCnpj, url.searchParams.get("cpfCnpj")) &&
+        matchesActive(p.active, url.searchParams.get("active")),
     );
     return HttpResponse.json(paginate(filtered, url.searchParams.get("page"), url.searchParams.get("size")));
   }),
@@ -83,7 +86,7 @@ export const handlers = [
     const gate = auth(request, ["ADMIN", "USER"]);
     if ("error" in gate) return gate.error;
     const body = (await request.json()) as { name: string; cpfCnpj?: string };
-    const created = { id: nextId(), name: body.name, cpfCnpj: body.cpfCnpj ?? null };
+    const created = { id: nextId(), name: body.name, cpfCnpj: body.cpfCnpj ?? null, active: true };
     people.push(created);
     return HttpResponse.json(created, { status: 201 });
   }),
@@ -92,7 +95,11 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const idx = people.findIndex((p) => p.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    const body = (await request.json()) as Partial<{ name: string; cpfCnpj: string }>;
+    const body = (await request.json()) as Partial<{ name: string; cpfCnpj: string; active: boolean }>;
+    if ("active" in body && body.active === true) {
+      const gateAdmin = auth(request, ["ADMIN"]);
+      if ("error" in gateAdmin) return gateAdmin.error;
+    }
     people[idx] = { ...people[idx], ...body };
     return HttpResponse.json(people[idx]);
   }),
@@ -101,7 +108,7 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const idx = people.findIndex((p) => p.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    people.splice(idx, 1);
+    people[idx] = { ...people[idx], active: false };
     return new HttpResponse(null, { status: 204 });
   }),
 
@@ -114,7 +121,8 @@ export const handlers = [
       (l) =>
         matchesText(l.name, url.searchParams.get("name")) &&
         matchesText(l.cpfCnpj, url.searchParams.get("cpfCnpj")) &&
-        matchesText(l.oab, url.searchParams.get("oab")),
+        matchesText(l.oab, url.searchParams.get("oab")) &&
+        matchesActive(l.active, url.searchParams.get("active")),
     );
     return HttpResponse.json(paginate(filtered, url.searchParams.get("page"), url.searchParams.get("size")));
   }),
@@ -129,7 +137,7 @@ export const handlers = [
     const gate = auth(request, ["ADMIN", "USER"]);
     if ("error" in gate) return gate.error;
     const body = (await request.json()) as { name: string; cpfCnpj?: string; oab?: string };
-    const created = { id: nextId(), name: body.name, cpfCnpj: body.cpfCnpj ?? null, oab: body.oab ?? null };
+    const created = { id: nextId(), name: body.name, cpfCnpj: body.cpfCnpj ?? null, oab: body.oab ?? null, active: true };
     lawyers.push(created);
     return HttpResponse.json(created, { status: 201 });
   }),
@@ -138,7 +146,11 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const idx = lawyers.findIndex((l) => l.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    const body = (await request.json()) as Partial<{ name: string; cpfCnpj: string; oab: string }>;
+    const body = (await request.json()) as Partial<{ name: string; cpfCnpj: string; oab: string; active: boolean }>;
+    if ("active" in body && body.active === true) {
+      const gateAdmin = auth(request, ["ADMIN"]);
+      if ("error" in gateAdmin) return gateAdmin.error;
+    }
     lawyers[idx] = { ...lawyers[idx], ...body };
     return HttpResponse.json(lawyers[idx]);
   }),
@@ -147,7 +159,7 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const idx = lawyers.findIndex((l) => l.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    lawyers.splice(idx, 1);
+    lawyers[idx] = { ...lawyers[idx], active: false };
     return new HttpResponse(null, { status: 204 });
   }),
 
@@ -167,6 +179,7 @@ export const handlers = [
       if (q.get("action") && l.action !== q.get("action")) return false;
       if (q.get("initialOrganization") && l.initialOrganization !== q.get("initialOrganization")) return false;
       if (q.get("positionClient") && l.positionClient !== q.get("positionClient")) return false;
+      if (!matchesActive(l.active, q.get("active"))) return false;
       return true;
     });
     return HttpResponse.json(paginate(filtered, q.get("page"), q.get("size")));
@@ -181,8 +194,8 @@ export const handlers = [
   http.post("/lawsuits", async ({ request }) => {
     const gate = auth(request, ["ADMIN", "USER"]);
     if ("error" in gate) return gate.error;
-    const body = (await request.json()) as Omit<(typeof lawsuits)[number], "id">;
-    const created = { id: nextId(), ...body };
+    const body = (await request.json()) as Omit<(typeof lawsuits)[number], "id" | "active">;
+    const created = { id: nextId(), active: true, ...body };
     lawsuits.push(created);
     return HttpResponse.json(created, { status: 201 });
   }),
@@ -192,6 +205,10 @@ export const handlers = [
     const idx = lawsuits.findIndex((l) => l.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
     const body = (await request.json()) as Partial<(typeof lawsuits)[number]>;
+    if (body.active === true) {
+      const gateAdmin = auth(request, ["ADMIN"]);
+      if ("error" in gateAdmin) return gateAdmin.error;
+    }
     lawsuits[idx] = { ...lawsuits[idx], ...body };
     return HttpResponse.json(lawsuits[idx]);
   }),
@@ -209,7 +226,7 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const idx = lawsuits.findIndex((l) => l.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    lawsuits.splice(idx, 1);
+    lawsuits[idx] = { ...lawsuits[idx], active: false };
     return new HttpResponse(null, { status: 204 });
   }),
 
@@ -249,6 +266,12 @@ export const handlers = [
     const idx = contracts.findIndex((c) => c.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
     const body = (await request.json()) as Partial<(typeof contracts)[number]>;
+    // Reactivating (active: false -> true) is ADMIN-only — per frontend-soft-delete SOFTDEL-08..10.
+    // Deactivating (Encerrar/Excluir, active: true -> false) stays ADMIN/USER, unchanged.
+    if (body.active === true && contracts[idx].active === false) {
+      const gateAdmin = auth(request, ["ADMIN"]);
+      if ("error" in gateAdmin) return gateAdmin.error;
+    }
     contracts[idx] = { ...contracts[idx], ...body };
     return HttpResponse.json(contracts[idx]);
   }),
@@ -257,7 +280,7 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const idx = contracts.findIndex((c) => c.id === Number(params.id));
     if (idx === -1) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    contracts.splice(idx, 1);
+    contracts[idx] = { ...contracts[idx], active: false };
     return new HttpResponse(null, { status: 204 });
   }),
   http.get("/contracts/:id/extensions", ({ request, params }) => {
@@ -480,13 +503,15 @@ export const handlers = [
     const gate = auth(request, ["ADMIN", "USER"]);
     if ("error" in gate) return gate.error;
 
-    const activeLawsuits = lawsuits.length;
+    // Soft-deleted (active: false) lawsuits don't count as real caseload — per SOFTDEL-13/14.
+    const activeLawsuitRecords = lawsuits.filter((l) => l.active);
+    const activeLawsuits = activeLawsuitRecords.length;
     const activeContracts = contracts.filter((c) => c.active).length;
     const expiringSoon = contracts.filter((c) => c.active && withinDays(c.endDate, 30));
 
     // Every Nature value is present, even at 0 — per DASHEVT-04.
     const natureCounts = new Map<string, number>(Object.keys(NATURE_LABELS).map((n) => [n, 0]));
-    for (const l of lawsuits) natureCounts.set(l.nature, (natureCounts.get(l.nature) ?? 0) + 1);
+    for (const l of activeLawsuitRecords) natureCounts.set(l.nature, (natureCounts.get(l.nature) ?? 0) + 1);
 
     const contratosVencendo = [...expiringSoon]
       .sort((a, b) => new Date(a.endDate!).getTime() - new Date(b.endDate!).getTime())

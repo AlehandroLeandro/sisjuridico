@@ -32,3 +32,9 @@ export function matchesText(haystack: string | null | undefined, needle: string 
   if (!haystack) return false;
   return haystack.toLowerCase().includes(needle.toLowerCase());
 }
+
+/** Soft-delete list filter: `active` query param defaults to true (only active records) unless explicitly `active=false`. Per frontend-soft-delete SOFTDEL-04..07. */
+export function matchesActive(itemActive: boolean, activeParam: string | null): boolean {
+  const wantActive = activeParam !== "false";
+  return itemActive === wantActive;
+}

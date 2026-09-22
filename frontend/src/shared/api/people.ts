@@ -10,11 +10,15 @@ export interface Person {
   id: number;
   name: string;
   cpfCnpj: string | null;
+  /** Soft delete flag — DELETE sets this false instead of removing the record. Per frontend-soft-delete spec. */
+  active: boolean;
 }
 
 export interface PersonFilters extends PageParams {
   name?: string;
   cpfCnpj?: string;
+  /** Defaults to true server-side when omitted — pass `false` to list disabled records instead. */
+  active?: boolean;
 }
 
 export function listPeople(params: PersonFilters = {}) {
@@ -29,10 +33,16 @@ export function createPerson(input: { name: string; cpfCnpj?: string }) {
   return api.post<Person>("people", input).then((r) => r.data);
 }
 
-export function updatePerson(id: number, input: Partial<{ name: string; cpfCnpj: string }>) {
+export function updatePerson(id: number, input: Partial<{ name: string; cpfCnpj: string; active: boolean }>) {
   return api.patch<Person>(`people/${id}`, input).then((r) => r.data);
 }
 
+/** Soft delete — the record is disabled, not removed. Per frontend-soft-delete spec. */
 export function deletePerson(id: number) {
   return api.delete(`people/${id}`);
+}
+
+/** ADMIN-only per SOFTDEL-08..10. */
+export function reactivatePerson(id: number) {
+  return updatePerson(id, { active: true });
 }

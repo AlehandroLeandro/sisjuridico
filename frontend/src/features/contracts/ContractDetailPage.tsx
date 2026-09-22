@@ -179,6 +179,15 @@ function ContractDetailForm({ contractId, isCreate, contract, extensions, extens
     },
   });
 
+  // ADMIN-only per SOFTDEL-08..10 — mock backend also enforces this server-side.
+  const reactivateMutation = useMutation({
+    mutationFn: () => updateContract(contractId!, { active: true }),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(["contract", contractId], updated);
+      queryClient.invalidateQueries({ queryKey: ["contracts"] });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: () => deleteContract(contractId!),
     onSuccess: () => {
@@ -424,6 +433,16 @@ function ContractDetailForm({ contractId, isCreate, contract, extensions, extens
                     <Button variant="danger" type="button" disabled={!contract.active} onClick={() => setConfirmEncerrar(true)}>
                       Encerrar contrato
                     </Button>
+                    {!contract.active && user?.role === "ADMIN" && (
+                      <Button
+                        variant="soft"
+                        type="button"
+                        disabled={reactivateMutation.isPending}
+                        onClick={() => reactivateMutation.mutate()}
+                      >
+                        Reativar contrato
+                      </Button>
+                    )}
                   </>
                 )}
               </div>
@@ -456,6 +475,9 @@ function ContractDetailForm({ contractId, isCreate, contract, extensions, extens
           )}
           {deactivateMutation.isError && (
             <div style={{ padding: "0 18px 14px", fontSize: 12, color: "var(--color-danger-text)" }}>{extractErrorMessage(deactivateMutation.error)}</div>
+          )}
+          {reactivateMutation.isError && (
+            <div style={{ padding: "0 18px 14px", fontSize: 12, color: "var(--color-danger-text)" }}>{extractErrorMessage(reactivateMutation.error)}</div>
           )}
         </div>
 

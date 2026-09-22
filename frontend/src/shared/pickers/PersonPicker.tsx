@@ -2,7 +2,8 @@ import { listPeople } from "../api/people";
 import { EntityPicker, type PickerOption } from "./EntityPicker";
 
 async function searchPeople(query: string): Promise<PickerOption[]> {
-  const page = await listPeople({ name: query || undefined, size: 10 });
+  // active: true — never offer a disabled Person when linking a new record. Per SOFTDEL-11.
+  const page = await listPeople({ name: query || undefined, size: 10, active: true });
   return page.content.map((p) => ({ id: p.id, label: p.name, sublabel: p.cpfCnpj ?? undefined }));
 }
 

@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createLawyer, deleteLawyer, listLawyers, updateLawyer, type Lawyer, type LawyerFilters } from "../../shared/api/lawyers";
+import { createLawyer, deleteLawyer, listLawyers, reactivateLawyer, updateLawyer, type Lawyer, type LawyerFilters } from "../../shared/api/lawyers";
+import { useAuth } from "../auth/AuthContext";
 import { usePagedQuery } from "../../shared/hooks/usePagedQuery";
 import { Button } from "../../shared/ui/Button";
 import { TextField } from "../../shared/ui/Field";
@@ -19,9 +20,11 @@ const emptyForm: LawyerFormState = { name: "", cpfCnpjDigits: "", oabDigits: "" 
 
 export function LawyersPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [nameFilter, setNameFilter] = useState("");
   const [cpfCnpjFilter, setCpfCnpjFilter] = useState("");
   const [oabFilter, setOabFilter] = useState("");
+  const [showInactive, setShowInactive] = useState(false);
 
   const [editing, setEditing] = useState<Lawyer | null>(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -31,14 +34,16 @@ export function LawyersPage() {
 
   const [deleting, setDeleting] = useState<Lawyer | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [reactivateError, setReactivateError] = useState<string | null>(null);
 
   const filters: LawyerFilters = useMemo(
     () => ({
       name: nameFilter.trim() || undefined,
       cpfCnpj: cpfCnpjFilter.trim() ? onlyDigits(cpfCnpjFilter) : undefined,
       oab: oabFilter.trim() ? onlyDigits(oabFilter) : undefined,
+      active: !showInactive,
     }),
-    [nameFilter, cpfCnpjFilter, oabFilter],
+    [nameFilter, cpfCnpjFilter, oabFilter, showInactive],
   );
 
   const { data, isLoading, isError, error, setPage } = usePagedQuery(["lawyers"], filters, listLawyers);
@@ -72,6 +77,15 @@ export function LawyersPage() {
       setDeleteError(null);
     },
     onError: (err) => setDeleteError(getErrorMessage(err, "Não foi possível excluir o advogado.")),
+  });
+
+  const reactivateMutation = useMutation({
+    mutationFn: reactivateLawyer,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lawyers"] });
+      setReactivateError(null);
+    },
+    onError: (err) => setReactivateError(getErrorMessage(err, "Não foi possível reativar o advogado.")),
   });
 
   function openCreate() {
@@ -123,6 +137,11 @@ export function LawyersPage() {
     setPage(0);
   }
 
+  function toggleInactive() {
+    setShowInactive((v) => !v);
+    setPage(0);
+  }
+
   if (forbidden) return <ForbiddenState />;
 
   const saving = createMutation.isPending || updateMutation.isPending;
@@ -150,18 +169,24 @@ export function LawyersPage() {
             value={oabFilter}
             onChange={(e) => handleFilterChange({ oab: e.target.value })}
           />
+          <Button variant={showInactive ? "primary" : "soft"} onClick={toggleInactive}>
+            Mostrar desabilitados
+          </Button>
           <Button onClick={openCreate}>+ Cadastrar advogado</Button>
         </div>
       </div>
 
       <div className="card">
+        {reactivateError && (
+          <div style={{ padding: "12px 18px 0", color: "var(--color-danger-text)", fontSize: 13 }}>{reactivateError}</div>
+        )}
         <div className="table-scroll">
           {isLoading ? (
             <LoadingState />
           ) : isError ? (
             <ErrorState />
           ) : rows.length === 0 ? (
-            <EmptyState />
+            <EmptyState label={showInactive ? "Nenhum advogado desabilitado." : undefined} />
           ) : (
             <table className="data-table">
               <thead>
@@ -183,9 +208,17 @@ export function LawyersPage() {
                         <Button variant="ghost" onClick={() => openEdit(l)}>
                           Editar
                         </Button>
-                        <Button variant="ghost" style={{ color: "var(--color-danger-text)" }} onClick={() => setDeleting(l)}>
-                          Excluir
-                        </Button>
+                        {showInactive ? (
+                          user?.role === "ADMIN" && (
+                            <Button variant="ghost" onClick={() => reactivateMutation.mutate(l.id)}>
+                              Reativar
+                            </Button>
+                          )
+                        ) : (
+                          <Button variant="ghost" style={{ color: "var(--color-danger-text)" }} onClick={() => setDeleting(l)}>
+                            Excluir
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -236,7 +269,7 @@ export function LawyersPage() {
       {deleting && (
         <ConfirmDialog
           title="Excluir advogado"
-          message={deleteError ?? `Confirma a exclusão de "${deleting.name}"?`}
+          message={deleteError ?? `Excluir "${deleting.name}"? O advogado deixará de aparecer na listagem.`}
           confirmLabel="Excluir"
           danger
           onConfirm={() => deleteMutation.mutate(deleting.id)}

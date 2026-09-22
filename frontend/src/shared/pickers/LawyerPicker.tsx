@@ -2,7 +2,8 @@ import { listLawyers } from "../api/lawyers";
 import { EntityPicker, type PickerOption } from "./EntityPicker";
 
 async function searchLawyers(query: string): Promise<PickerOption[]> {
-  const page = await listLawyers({ name: query || undefined, size: 10 });
+  // active: true — never offer a disabled Lawyer when linking a new record. Per SOFTDEL-11.
+  const page = await listLawyers({ name: query || undefined, size: 10, active: true });
   return page.content.map((l) => ({ id: l.id, label: l.name, sublabel: l.oab ? `OAB ${l.oab}` : undefined }));
 }
 

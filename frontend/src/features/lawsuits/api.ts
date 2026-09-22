@@ -23,9 +23,12 @@ export interface Lawsuit {
   dataValorCausa: string | null;
   dataInicio: string;
   observacao: string | null;
+  /** Soft delete flag — DELETE sets this false instead of removing the record. Per frontend-soft-delete spec. Never set by the create/edit form (see LawsuitInput). */
+  active: boolean;
 }
 
-export type LawsuitInput = Omit<Lawsuit, "id">;
+/** active is deliberately excluded — the create/edit wizard never touches it; only delete/reactivate do. */
+export type LawsuitInput = Omit<Lawsuit, "id" | "active">;
 
 /** Quick-filter set per LAW-02 (numProcesso, personId, lawyerId, court, nature). */
 export interface LawsuitFilters extends PageParams {
@@ -34,6 +37,8 @@ export interface LawsuitFilters extends PageParams {
   lawyerId?: number;
   court?: string;
   nature?: string;
+  /** Defaults to true server-side when omitted — pass `false` to list disabled records instead. */
+  active?: boolean;
 }
 
 export function listLawsuits(params: LawsuitFilters = {}) {
@@ -52,8 +57,14 @@ export function updateLawsuit(id: number, input: LawsuitInput) {
   return api.patch<Lawsuit>(`lawsuits/${id}`, input).then((r) => r.data);
 }
 
+/** Soft delete — the record is disabled, not removed. Per frontend-soft-delete spec. */
 export function deleteLawsuit(id: number) {
   return api.delete(`lawsuits/${id}`);
+}
+
+/** ADMIN-only per SOFTDEL-08..10. */
+export function reactivateLawsuit(id: number) {
+  return api.patch<Lawsuit>(`lawsuits/${id}`, { active: true }).then((r) => r.data);
 }
 
 /** Strip everything but digits — what gets sent/stored, per LAW-* Assumptions on numProcesso. */
