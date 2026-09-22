@@ -5,6 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -90,36 +91,12 @@ public class Lawsuit {
     @Column(nullable = true)
     private LocalDate dataValorCausa;
 
-    @DecimalMin(value = "0.1", inclusive = true, message = "O valor provisionado deve ser maior que zero")
-    @Digits(integer = 10, fraction = 2, message = "O valor provisionado deve ter no máximo 10 dígitos inteiros e 2 dígitos decimais")
-    @Column(nullable = true, precision = 12, scale = 2)
-    private BigDecimal valorProvisionado;
+    @NotNull
+    @Column(nullable = false)
+    private LocalDate dataInicio;
 
-    @Column(nullable = true)
-    private LocalDate dataValorProvisionado;
-
-    @DecimalMin(value = "0.1", inclusive = true, message = "O valor do acordo deve ser maior que zero")
-    @Digits(integer = 10, fraction = 2, message = "O valor do acordo deve ter no máximo 10 dígitos inteiros e 2 dígitos decimais")
-    @Column(nullable = true, precision = 12, scale = 2)
-    private BigDecimal valorAcordo;
-
-    @Column(nullable = true)
-    private LocalDate dataValorAcordo;
-
-    @DecimalMin(value = "0.1", inclusive = true, message = "O custo do processo deve ser maior que zero")
-    @Digits(integer = 10, fraction = 2, message = "O custo do processo deve ter no máximo 10 dígitos inteiros e 2 dígitos decimais")
-    @Column(nullable = true, precision = 12, scale = 2)
-    private BigDecimal custoProcesso;
-
-    @Column(nullable = true)
-    private LocalDate dataCustoProcesso;
-
-    @DecimalMin(value = "0.1", inclusive = true, message = "O valor da sentença deve ser maior que zero")
-    @Digits(integer = 10, fraction = 2, message = "O valor da sentença deve ter no máximo 10 dígitos inteiros e 2 dígitos decimais")
-    @Column(nullable = true, precision = 12, scale = 2)
-    private BigDecimal valorSentenca;
-
-    @Column(nullable = true)
-    private LocalDate dataValorSentenca;
+    @Size(max = 2000)
+    @Column(nullable = true, length = 2000)
+    private String observacao;
 
 }
