@@ -37,9 +37,15 @@ export const router = createBrowserRouter([
             element: <RequireRole roles={["ADMIN", "USER", "ACCOUNTING"]} />,
             children: [
               { path: "contratos", element: <ContractsListPage /> },
-              { path: "contratos/novo", element: <ContractDetailPage /> },
               { path: "contratos/:id", element: <ContractDetailPage /> },
             ],
+          },
+          {
+            // ACCOUNTING is read-only on Contracts — creating one has no legitimate use for that
+            // role, so this route is blocked outright rather than relying only on the read-only
+            // form inside ContractDetailPage (which still enforces it too, defense in depth).
+            element: <RequireRole roles={["ADMIN", "USER"]} />,
+            children: [{ path: "contratos/novo", element: <ContractDetailPage /> }],
           },
           {
             element: <RequireRole roles={["ADMIN", "USER"]} />,

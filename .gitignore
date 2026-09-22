@@ -35,7 +35,7 @@ build/
 ## IA ##
 .agents
 .codex
-graphify-out
+graphify-out/cache
 .claude
 .specs
 docs

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import logoSymbol from "../../assets/logo-symbol.png";
 import { useAuth } from "./AuthContext";
 import { landingPathForRole } from "../shell/nav";
 
@@ -34,12 +35,7 @@ export function LoginPage() {
     <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: "minmax(0,1.05fr) minmax(0,1fr)", background: "var(--color-bg)" }}>
       <div style={{ background: "var(--color-ink)", padding: "56px 56px 44px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "100vh" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ width: 34, height: 34, background: "var(--color-accent)", display: "grid", placeItems: "center" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth={2} strokeLinecap="round">
-              <path d="M12 3v18M5 21h14M4 8h16" />
-              <path d="M7 8l-3 6h6zM17 8l3 6h-6z" />
-            </svg>
-          </div>
+          <img src={logoSymbol} alt="" width={34} height={34} style={{ objectFit: "contain" }} />
           <div style={{ color: "var(--color-text-on-ink)", fontSize: 19, fontWeight: 700, letterSpacing: "-.02em" }}>Jurídico Carbocat</div>
         </div>
         <div style={{ maxWidth: 420 }}>
