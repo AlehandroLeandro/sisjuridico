@@ -398,19 +398,43 @@ function DocumentosRecentesPanel({ items, onVerTodos }: { items: DocumentoRecent
   );
 }
 
+const NATURE_CHART_LIMIT = 5;
+
+/**
+ * Zero-count natures never compete for a slot; the remaining ones rank by
+ * count descending (ties broken alphabetically by label, matching the app's
+ * alphabetization rule), top 5 shown individually, the rest summed into a
+ * single static "Outros" row — never shown if 5 or fewer natures qualify.
+ * Per UXFIX-01..05.
+ */
+function rankNatureChart(items: NaturezaCount[]): { key: string; label: string; count: number }[] {
+  const ranked = items
+    .filter((n) => n.count > 0)
+    .map((n) => ({ key: n.nature, label: natureLabel(n.nature), count: n.count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "pt-BR"));
+
+  if (ranked.length <= NATURE_CHART_LIMIT) return ranked;
+
+  const top = ranked.slice(0, NATURE_CHART_LIMIT);
+  const rest = ranked.slice(NATURE_CHART_LIMIT);
+  const outros = { key: "__outros__", label: "Outros", count: rest.reduce((sum, n) => sum + n.count, 0) };
+  return [...top, outros];
+}
+
 function NaturezaPanel({ items }: { items: NaturezaCount[] }) {
-  const max = Math.max(1, ...items.map((n) => n.count));
+  const chartItems = rankNatureChart(items);
+  const max = Math.max(1, ...chartItems.map((n) => n.count));
   const total = items.reduce((sum, n) => sum + n.count, 0);
   return (
     <div className="nature-panel">
       <div className="nature-panel-title">Distribuição por natureza</div>
-      {items.length === 0 ? (
+      {chartItems.length === 0 ? (
         <EmptyState label="Nenhum processo cadastrado." />
       ) : (
-        items.map((n) => (
-          <div key={n.nature} className="nature-row">
+        chartItems.map((n) => (
+          <div key={n.key} className="nature-row">
             <div className="nature-row-labels">
-              <span>{natureLabel(n.nature)}</span>
+              <span>{n.label}</span>
               <span className="nature-row-count">{n.count}</span>
             </div>
             <div className="nature-bar-track">
