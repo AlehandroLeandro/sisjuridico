@@ -50,6 +50,17 @@ export function getDownloadUrl(id: number) {
   return api.get<{ url: string; expiresAt: string }>(`documents/${id}/download`).then((r) => r.data);
 }
 
+/** Forces a real browser download of an already-resolved presigned URL. Shared by the list's "Baixar" action and the preview modal's fallback for non-inline-renderable types. */
+export function triggerBrowserDownload(url: string, fileName: string) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.rel = "noopener";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 export interface DocumentUpdateInput {
   fileName?: string;
   contractId?: number | null;

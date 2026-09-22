@@ -10,6 +10,7 @@ import { LoadingState, EmptyState, ErrorState } from "../../shared/ui/States";
 import { Badge } from "../../shared/ui/Badge";
 import { Pagination } from "../../shared/ui/Pagination";
 import { EntityPicker, type PickerOption } from "../../shared/pickers/EntityPicker";
+import { DocumentPreviewModal } from "./DocumentPreviewModal";
 import {
   type Document,
   type DocumentFilters,
@@ -19,6 +20,7 @@ import {
   listDocuments,
   uploadDocument,
   getDownloadUrl,
+  triggerBrowserDownload,
   updateDocument,
   deleteDocument,
   getContract,
@@ -366,6 +368,7 @@ export function DocumentsPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [editingDoc, setEditingDoc] = useState<Document | null>(null);
   const [deletingDoc, setDeletingDoc] = useState<Document | null>(null);
+  const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
   const [listError, setListError] = useState<string | null>(null);
 
   const filters = useMemo<DocumentFilters>(
@@ -404,21 +407,11 @@ export function DocumentsPage() {
     queryClient.invalidateQueries({ queryKey: ["documents"] });
   }
 
-  async function handleDownloadAction(doc: Document, mode: "view" | "download") {
+  async function handleDownload(doc: Document) {
     setListError(null);
     try {
       const { url } = await getDownloadUrl(doc.id);
-      if (mode === "view") {
-        window.open(url, "_blank", "noopener");
-      } else {
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = doc.fileName;
-        link.rel = "noopener";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
+      triggerBrowserDownload(url, doc.fileName);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 404) {
         setListError("Este documento não existe mais.");
@@ -524,10 +517,10 @@ export function DocumentsPage() {
                     <td>{formatDate(doc.createdAt)}</td>
                     <td>
                       <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-                        <Button variant="ghost" onClick={() => handleDownloadAction(doc, "view")}>
+                        <Button variant="ghost" onClick={() => setPreviewDoc(doc)}>
                           Visualizar
                         </Button>
-                        <Button variant="ghost" onClick={() => handleDownloadAction(doc, "download")}>
+                        <Button variant="ghost" onClick={() => void handleDownload(doc)}>
                           Baixar
                         </Button>
                         <Button variant="ghost" onClick={() => setEditingDoc(doc)}>
@@ -578,6 +571,8 @@ export function DocumentsPage() {
           onCancel={() => setDeletingDoc(null)}
         />
       )}
+
+      {previewDoc && <DocumentPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />}
     </div>
   );
 }
