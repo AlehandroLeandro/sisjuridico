@@ -26,14 +26,24 @@ public final class PageableRequest {
             throw new IllegalArgumentException("size deve ser maior que zero.");
         }
         List<Sort.Order> orders = new ArrayList<>();
-        for (String sort : sorts == null ? List.<String>of() : sorts) {
+        List<String> requestedSorts = sorts == null ? List.of() : sorts;
+        for (int index = 0; index < requestedSorts.size(); index++) {
+            String sort = requestedSorts.get(index);
             String[] parts = sort.split(",", -1);
             if (parts.length == 0 || parts.length > 2 || parts[0].isBlank()) {
                 throw new IllegalArgumentException("sort inválido.");
             }
-            Sort.Direction direction = parts.length == 2
-                    ? Sort.Direction.fromOptionalString(parts[1]).orElseThrow(() -> new IllegalArgumentException("Direção de sort inválida."))
-                    : Sort.Direction.ASC;
+            Sort.Direction direction = Sort.Direction.ASC;
+            if (parts.length == 2) {
+                direction = Sort.Direction.fromOptionalString(parts[1])
+                        .orElseThrow(() -> new IllegalArgumentException("Direção de sort inválida."));
+            } else if (index + 1 < requestedSorts.size()) {
+                var nextDirection = Sort.Direction.fromOptionalString(requestedSorts.get(index + 1));
+                if (nextDirection.isPresent()) {
+                    direction = nextDirection.get();
+                    index++;
+                }
+            }
             orders.add(new Sort.Order(direction, parts[0]));
         }
         if (orders.isEmpty()) {

@@ -123,8 +123,7 @@ export interface DocumentoRecente {
   documentId: number;
   fileName: string;
   createdAt: string;
-  contractId: number | null;
-  lawsuitId: number | null;
+  linkedEntityLabel: string;
 }
 
 export interface NaturezaCount {
@@ -145,6 +144,56 @@ export interface DashboardResponse {
   proximosEventos: Evento[];
 }
 
+interface DashboardApiResponse {
+  kpis: Array<{ key: string; value: number; delta: number }>;
+  contratosVencendo: Array<{
+    id: number;
+    contractorName: string;
+    type: string;
+    value: number;
+    daysRemaining: number;
+    endDate: string;
+  }>;
+  documentosRecentes: Array<{
+    id: number;
+    fileName: string;
+    linkedEntityLabel: string;
+    createdAt: string;
+  }>;
+  distribuicaoNatureza: NaturezaCount[];
+  proximosEventos: Evento[];
+}
+
 export function getDashboard() {
-  return api.get<DashboardResponse>("dashboard").then((r) => r.data);
+  return api.get<DashboardApiResponse>("dashboard").then(({ data }) => {
+    const kpis = new Map(data.kpis.map((kpi) => [kpi.key, kpi]));
+    const kpi = (key: string): DashboardKpi => {
+      const item = kpis.get(key);
+      return { valor: item?.value ?? 0, deltaMes: item?.delta };
+    };
+
+    return {
+      kpis: {
+        processosAtivos: kpi("activeLawsuits"),
+        contratosVigentes: kpi("activeContracts"),
+        contratosAVencer30d: { valor: kpis.get("contractsExpiringIn30Days")?.value ?? 0 },
+      },
+      contratosVencendo: data.contratosVencendo.map((contract) => ({
+        contractId: contract.id,
+        contratante: contract.contractorName,
+        tipo: contract.type,
+        valor: contract.value,
+        diasRestantes: contract.daysRemaining,
+        endDate: contract.endDate,
+      })),
+      documentosRecentes: data.documentosRecentes.map((document) => ({
+        documentId: document.id,
+        fileName: document.fileName,
+        linkedEntityLabel: document.linkedEntityLabel,
+        createdAt: document.createdAt,
+      })),
+      distribuicaoNatureza: data.distribuicaoNatureza,
+      proximosEventos: data.proximosEventos,
+    };
+  });
 }

@@ -363,9 +363,7 @@ function ContratosVencendoPanel({ items, onVerTodos }: { items: ContratoVencendo
 }
 
 function linkedEntityLabel(d: DocumentoRecente): string {
-  if (d.contractId != null) return `Contrato #${d.contractId}`;
-  if (d.lawsuitId != null) return `Processo #${d.lawsuitId}`;
-  return "Sem vínculo";
+  return d.linkedEntityLabel;
 }
 
 function DocumentosRecentesPanel({ items, onVerTodos }: { items: DocumentoRecente[]; onVerTodos: () => void }) {
