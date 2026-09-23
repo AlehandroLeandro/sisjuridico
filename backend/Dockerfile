@@ -30,5 +30,4 @@ USER spring
 EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]
 HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
-CMD curl -f http:localhost:8080/v3/api-docs || exit 1
-
+CMD curl -f http://localhost:8080/api/v3/api-docs || exit 1

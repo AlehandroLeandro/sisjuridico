@@ -8,3 +8,7 @@ target/
 REVISAO_BACKEND.md
 *.md
 .env
+
+frontend/dist
+frontend/node_modules
+.git/
