@@ -12,3 +12,5 @@ REVISAO_BACKEND.md
 frontend/dist
 frontend/node_modules
 .git/
+docs
+graphify-out
