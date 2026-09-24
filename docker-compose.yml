@@ -1,13 +1,7 @@
 services:
   sisjuridico-app:
-    image: sisjuridico-app
+    image: alehandroleandro/sisjuridico:1.0.1
     container_name: sisjuridico-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        VITE_USE_MOCKS: "false"
-        VITE_API_BASE_URL: /api/
     ports:
       - "${APP_PORT}:${APP_PORT}"
     environment:
