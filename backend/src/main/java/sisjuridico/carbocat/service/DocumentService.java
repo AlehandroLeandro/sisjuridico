@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import sisjuridico.carbocat.dto.request.update.DocumentUpdateDTO;
-import sisjuridico.carbocat.dto.response.DocumentDownloadResponseDTO;
+import sisjuridico.carbocat.dto.response.DocumentContentResponse;
 import sisjuridico.carbocat.dto.response.DocumentResponseDTO;
 import sisjuridico.carbocat.entities.Contract;
 import sisjuridico.carbocat.entities.Document;
@@ -22,7 +22,6 @@ import sisjuridico.carbocat.repository.DocumentsRepository;
 import sisjuridico.carbocat.repository.LawsuitRepository;
 import sisjuridico.carbocat.specification.DocumentSpecifications;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -76,10 +75,13 @@ public class DocumentService {
     }
 
     @Transactional(readOnly = true)
-    public DocumentDownloadResponseDTO download(Long id) {
+    public DocumentContentResponse download(Long id) {
         Document document = findEntity(id);
-        Instant expiresAt = Instant.now().plusSeconds(300);
-        return new DocumentDownloadResponseDTO(objectStorageService.downloadUrl(document.getStoragePath()), expiresAt);
+        return new DocumentContentResponse(
+                objectStorageService.download(document.getStoragePath()),
+                document.getFileName(),
+                document.getContentType(),
+                document.getSizeBytes());
     }
 
     public DocumentResponseDTO replaceFile(Long id, MultipartFile file) {

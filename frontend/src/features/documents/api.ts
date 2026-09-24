@@ -46,12 +46,13 @@ export function uploadDocument(input: UploadDocumentInput, onProgress?: (percent
     .then((r) => r.data);
 }
 
-export function getDownloadUrl(id: number) {
-  return api.get<{ url: string; expiresAt: string }>(`documents/${id}/download`).then((r) => r.data);
+export function downloadDocument(id: number) {
+  return api.get<Blob>(`documents/${id}/download`, { responseType: "blob" }).then((r) => r.data);
 }
 
-/** Forces a real browser download of an already-resolved presigned URL. Shared by the list's "Baixar" action and the preview modal's fallback for non-inline-renderable types. */
-export function triggerBrowserDownload(url: string, fileName: string) {
+/** Forces a browser download of a file received from the authenticated backend. */
+export function triggerBrowserDownload(file: Blob, fileName: string) {
+  const url = URL.createObjectURL(file);
   const link = document.createElement("a");
   link.href = url;
   link.download = fileName;
@@ -59,6 +60,7 @@ export function triggerBrowserDownload(url: string, fileName: string) {
   document.body.appendChild(link);
   link.click();
   link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 export interface DocumentUpdateInput {

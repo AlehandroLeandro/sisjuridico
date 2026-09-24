@@ -365,9 +365,11 @@ export const handlers = [
     if ("error" in gate) return gate.error;
     const found = documents.find((d) => d.id === Number(params.id));
     if (!found) return HttpResponse.json({ message: "Not found" }, { status: 404 });
-    return HttpResponse.json({
-      url: `data:${found.contentType};base64,`, // mock: empty payload, real backend returns a pre-signed URL
-      expiresAt: new Date(Date.now() + 5 * 60_000).toISOString(),
+    return new HttpResponse(new Blob([], { type: found.contentType }), {
+      headers: {
+        "Content-Disposition": `attachment; filename="${found.fileName}"`,
+        "Content-Type": found.contentType,
+      },
     });
   }),
   http.patch("/documents/:id", async ({ request, params }) => {

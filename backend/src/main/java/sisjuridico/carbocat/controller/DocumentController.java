@@ -3,8 +3,11 @@ package sisjuridico.carbocat.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,11 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import sisjuridico.carbocat.config.PageableRequest;
 import sisjuridico.carbocat.dto.request.update.DocumentUpdateDTO;
-import sisjuridico.carbocat.dto.response.DocumentDownloadResponseDTO;
+import sisjuridico.carbocat.dto.response.DocumentContentResponse;
 import sisjuridico.carbocat.dto.response.DocumentResponseDTO;
 import sisjuridico.carbocat.service.DocumentService;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -50,8 +54,30 @@ public class DocumentController {
     }
 
     @GetMapping("/{id}/download")
-    public ResponseEntity<DocumentDownloadResponseDTO> download(@PathVariable Long id) {
-        return ResponseEntity.ok(documentService.download(id));
+    public ResponseEntity<StreamingResponseBody> download(@PathVariable Long id) {
+        DocumentContentResponse document = documentService.download(id);
+        StreamingResponseBody body = outputStream -> {
+            try (var inputStream = document.content()) {
+                inputStream.transferTo(outputStream);
+            }
+        };
+
+        return ResponseEntity.ok()
+                .contentType(safeMediaType(document.contentType()))
+                .contentLength(document.sizeBytes())
+                .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
+                        .filename(document.fileName(), StandardCharsets.UTF_8)
+                        .build()
+                        .toString())
+                .body(body);
+    }
+
+    private MediaType safeMediaType(String contentType) {
+        try {
+            return MediaType.parseMediaType(contentType);
+        } catch (IllegalArgumentException exception) {
+            return MediaType.APPLICATION_OCTET_STREAM;
+        }
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

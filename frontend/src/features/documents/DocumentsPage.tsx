@@ -19,7 +19,7 @@ import {
   MAX_UPLOAD_BYTES,
   listDocuments,
   uploadDocument,
-  getDownloadUrl,
+  downloadDocument,
   triggerBrowserDownload,
   updateDocument,
   deleteDocument,
@@ -414,8 +414,8 @@ export function DocumentsPage() {
   async function handleDownload(doc: Document) {
     setListError(null);
     try {
-      const { url } = await getDownloadUrl(doc.id);
-      triggerBrowserDownload(url, doc.fileName);
+      const file = await downloadDocument(doc.id);
+      triggerBrowserDownload(file, doc.fileName);
     } catch (err) {
       if (axios.isAxiosError(err) && err.response?.status === 404) {
         setListError("Este documento não existe mais.");
